@@ -1,2 +1,2 @@
 # Horas-Complementares
-App de TCC -- Horas Complementares UniAcademia
+Front-end do App de TCC -- Horas Complementares UniAcademia
