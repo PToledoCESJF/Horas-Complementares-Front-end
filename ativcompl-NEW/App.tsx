@@ -68,7 +68,7 @@
        <ScrollView
          contentInsetAdjustmentBehavior="automatic"
          style={backgroundStyle}>
-         <Header />
+         {/* <Header /> */}
          <View
            style={{
              backgroundColor: isDarkMode ? Colors.black : Colors.white,
