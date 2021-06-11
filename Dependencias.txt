@@ -1,5 +1,0 @@
-npm install @react-native-community/async-storage @react-native-community/datetimepicker axios moment react-native react-native-gesture-handler react-native-gravatar react-native-reanimated react-native-screens react-native-vector-icons react-navigation react-navigation-drawer -S
-
-DEV
-
-npm install @babel/core @babel/runtime @react-native-community/eslint-config babel-jest eslint jest metro-react-native-babel-preset react-test-renderer -S -D
