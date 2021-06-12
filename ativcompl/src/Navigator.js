@@ -1,4 +1,3 @@
-import React, { Component } from 'react'
 import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 
 import Auth from './screens/auth/Auth'
