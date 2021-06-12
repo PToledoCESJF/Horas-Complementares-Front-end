@@ -14,7 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import Activity from './components/activity/Activity'
 import ActivityAdd from './screens/activity/ActivityAdd'
-import topImage from '../assets/imgs/topImage.png'
+import topPage from '../assets/imgs/top_page.png'
 import commonStyles from './commonStyles'
 
 const initialState = {
@@ -93,7 +93,7 @@ export default class App extends Component {
                     onCancel={() => this.setState({ showActivityAdd: false })}
                     onSave={this.addActivity}
                 />
-                <ImageBackground source={topImage}
+                <ImageBackground source={topPage}
                     style={styles.background}>
                     <View style={styles.iconBar}>
                         <TouchableOpacity onPress={this.toggleFilter}>
@@ -130,10 +130,10 @@ const styles = StyleSheet.create({
         flex: 1
     },
     background: {
-        flex: 3
+        flex: 2
     },
     app: {
-        flex: 7,
+        flex: 8,
         fontFamily: commonStyles.fontFamily,
         color: commonStyles.colors.secondary,
         fontSize: 50,
