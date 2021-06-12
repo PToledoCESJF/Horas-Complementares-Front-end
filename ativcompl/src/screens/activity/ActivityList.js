@@ -12,10 +12,10 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-import Activity from './components/activity/Activity'
-import ActivityAdd from './screens/activity/ActivityAdd'
-import topPage from '../assets/imgs/top_page.png'
-import commonStyles from './commonStyles'
+import Activity from '../../components/activity/Activity'
+import ActivityAdd from './ActivityAdd'
+import topPage from '../../../assets/imgs/top_page.png'
+import commonStyles from '../../commonStyles'
 
 const initialState = {
     showActivityAdd: false,
