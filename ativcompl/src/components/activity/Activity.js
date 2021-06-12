@@ -1,5 +1,12 @@
 import React from 'react'
-import { View, Text, StyleSheet, TouchableWithoutFeedback } from 'react-native'
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableWithoutFeedback,
+    TouchableOpacity
+} from 'react-native'
+import Swipeable from 'react-native-gesture-handler/Swipeable'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import moment from 'moment'
 import 'moment/locale/pt-br'
@@ -13,22 +20,46 @@ export default props => {
     const doneOrNotStyle = props.closed != null ?
         { textDecorationLine: 'line-through' } : {}
 
-    return (
-        <View style={styles.container}>
-            <TouchableWithoutFeedback onPress={() => props.toggleActivity(props.id)}>
-                <View style={styles.checkContainer}>
-                    {getCheckView(props.closed)}
-                </View>
-            </TouchableWithoutFeedback>
-            <View>
-                <Text style={[styles.desc, doneOrNotStyle]}>{props.name}</Text>
-                <Text style={styles.date}>Início: {formatDate}</Text>
-                <Text style={styles.hours}>
-                    Carga horários: {props.workload + ""}
-                    Horas completas: {props.hours_completed + ""}
-                </Text>
+    const getRightContent = () => {
+        return (
+            <TouchableOpacity style={styles.right}
+                onPress={() => props.onDelete && props.onDelete(props.id)}>
+                <Icon name="trash" size={25} color="#FFF" />
+            </TouchableOpacity>
+        )
+    }
+
+    const getLeftContent = () => {
+        return (
+            <View style={styles.left}>
+                <Icon name="check" size={25} color="#FFF" style={styles.closeIcon} />
+                <Text style={styles.closeActivity}>Concluir</Text>
             </View>
-        </View>
+        )
+    }
+
+    return (
+        <Swipeable
+            renderRightActions={getRightContent}
+            renderLeftActions={getLeftContent}
+            onSwipeableLeftOpen={() => props.onDelete && props.onDelete(props.id)}>
+
+            <View style={styles.container}>
+                <TouchableWithoutFeedback onPress={() => props.onToggleActivity(props.id)}>
+                    <View style={styles.checkContainer}>
+                        {getCheckView(props.closed)}
+                    </View>
+                </TouchableWithoutFeedback>
+                <View>
+                    <Text style={[styles.desc, doneOrNotStyle]}>{props.name}</Text>
+                    <Text style={styles.date}>Início: {formatDate}</Text>
+                    <Text style={styles.hours}>
+                        Carga horários: {props.workload + ""}
+                        Horas completas: {props.hours_completed + ""}
+                    </Text>
+                </View>
+            </View>
+        </Swipeable>
     )
 }
 
@@ -53,7 +84,8 @@ const styles = StyleSheet.create({
         borderColor: '#AAA',
         borderBottomWidth: 1,
         alignItems: 'center',
-        paddingVertical: 10
+        paddingVertical: 10,
+        backgroundColor: '#FFF'
     },
     checkContainer: {
         width: '20%',
@@ -89,5 +121,27 @@ const styles = StyleSheet.create({
         fontFamily: commonStyles.fontFamily,
         color: commonStyles.colors.subText,
         fontSize: 13
+    },
+    right: {
+        backgroundColor: 'red',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        paddingHorizontal: 20
+    },
+    left: {
+        flex: 1,
+        backgroundColor: '#009bd9',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    closeActivity: {
+        fontFamily: commonStyles.fontFamily,
+        color: '#FFF',
+        fontSize: 18,
+        margin: 10
+    },
+    closeIcon: {
+        marginLeft: 10
     }
 })
