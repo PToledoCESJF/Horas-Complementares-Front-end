@@ -15,7 +15,7 @@ import commonStyles from '../../commonStyles'
 
 export default props => {
 
-    const formatDate = moment().locale('pt-br').format('ddd, D [de] MMMM')
+    const formatDate = moment(props.start).locale('pt-br').format('ddd, D [de] MMMM')
 
     const doneOrNotStyle = props.closed != null ?
         { textDecorationLine: 'line-through' } : {}
@@ -51,12 +51,10 @@ export default props => {
                     </View>
                 </TouchableWithoutFeedback>
                 <View>
-                    <Text style={[styles.desc, doneOrNotStyle]}>{props.name}</Text>
+                    <Text style={[styles.activ, doneOrNotStyle]}>{props.name}</Text>
                     <Text style={styles.date}>Início: {formatDate}</Text>
-                    <Text style={styles.hours}>
-                        Carga horários: {props.workload + ""}
-                        Horas completas: {props.hours_completed + ""}
-                    </Text>
+                    <Text style={styles.hours}>Carga horários: {props.workload + ""}</Text>
+                    <Text style={styles.hours}>Horas completas: {props.hoursCompleted + ""}</Text>
                 </View>
             </View>
         </Swipeable>
@@ -107,7 +105,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
-    desc: {
+    activ: {
         fontFamily: commonStyles.fontFamily,
         color: commonStyles.colors.mainText,
         fontSize: 15

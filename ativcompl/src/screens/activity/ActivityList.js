@@ -11,7 +11,11 @@ import {
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from 'axios'
+import moment from 'moment'
+import 'moment/locale/pt-br'
 
+import { server, showError } from '../../common'
 import Activity from '../../components/activity/Activity'
 import ActivityAdd from './ActivityAdd'
 import topPage from '../../../assets/imgs/top_page.png'
@@ -29,9 +33,23 @@ export default class App extends Component {
     }
 
     componentDidMount = async () => {
-        const stateString =  await AsyncStorage.getItem('activityState')
-        const state = JSON.parse(stateString || initialState)
-        this.setState(state, this.filterActivities)
+        const stateString = await AsyncStorage.getItem('activityState')
+        const savedState = JSON.parse(stateString) || initialState
+        this.setState({
+            showDoneActivity: savedState.showDoneActivity
+        }, this.filterActivities)
+        this.loadActivities()
+    }
+
+    // TODO >> converter essa funcionalidade para outros fins
+    loadActivities = async () => {
+        try {
+            const maxDate = moment().format('YYYY-MM-10 23:59:59')
+            const res = await axios.get(`${server}/activities?start=${maxDate}`)
+            this.setState({ activities: res.data }, this.filterActivities)
+        } catch (e) {
+            showError(e)
+        }
     }
 
     toggleFilter = () => {
@@ -47,41 +65,49 @@ export default class App extends Component {
             visibleActivities = this.state.activities.filter(pending)
         }
         this.setState({ visibleActivities })
-        AsyncStorage.setItem('activityState', JSON.stringify(this.state))
+        AsyncStorage.setItem('activityState', JSON.stringify({
+            showDoneActivity: this.state.showDoneActivity
+        }))
     }
 
-    toggleActivity = activityId => {
-        const activities = [...this.state.activities]
-        activities.forEach(activity => {
-            if (activity.id === activityId) {
-                activity.closed = activity.closed ? null : true
-            }
-        })
-        this.setState({ activities }, this.filterActivities)
+    toggleActivity = async activityId => {
+        try {
+            await axios.put(`${server}/activities/${activityId}/toggle`)
+            this.loadActivities()
+        } catch(e) {
+            showError(e)
+        }
     }
 
-    addActivity = newActivity => {
+    addActivity = async newActivity => {
         if (!newActivity.name || !newActivity.name.trim()) {
             Alert.alert('Dados Inválidos', 'Nome da Atividade não informado.')
             return
         }
 
-        const activities = [...this.state.activities]
-        activities.push({
-            id: Math.random(),
-            name: newActivity.name,
-            start: newActivity.start,
-            workload: 15,
-            hours_completed: 9,
-            closed: null
-        })
+        try {
+            await axios.post(`${server}/activities`, {
+                name: newActivity.name,
+                start: newActivity.start,
+                workload: newActivity.workload,
+                hoursCompleted: newActivity.hoursCompleted,
+                closed: null
+            })
 
-        this.setState({ activities, showActivityAdd: false }, this.filterActivities)
+            this.setState({ showActivityAdd: false }, this.loadActivities)
+
+        } catch (e) {
+            showError(e)
+        }
     }
 
-    deleteActivity = id => {
-        const activities = this.state.activities.filter(activity => activity.id !== id)
-        this.setState({ activities }, this.filterActivities)
+    deleteActivity = async activityId => {
+        try {
+            await axios.delete(`${server}/activities/${activityId}`)
+            this.loadActivities()
+        } catch(e) {
+            showError(e)
+        }
     }
 
     render() {
@@ -102,9 +128,7 @@ export default class App extends Component {
                                 size={20} color={commonStyles.colors.primary}
                             />
                         </TouchableOpacity>
-
                     </View>
-
                 </ImageBackground>
                 <View style={styles.app}>
                     <FlatList

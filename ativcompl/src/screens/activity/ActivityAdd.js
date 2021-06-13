@@ -30,9 +30,11 @@ export default class ActivityAdd extends Component {
     save = () => {
         const newActivity = {
             name: this.state.name,
-            start: this.state.start
+            start: this.state.start,
+            workload: this.state.workload,
+            hoursCompleted: this.state.hoursCompleted
         }
-        
+
         this.props.onSave && this.props.onSave(newActivity)
         this.setState({ ...initialState })
     }
@@ -43,18 +45,17 @@ export default class ActivityAdd extends Component {
             mode='date'
         />
 
-        const dateString = moment(new Date()).format('ddd, D [de] MMMM [de] YYYY')
+        const dateString = moment(this.state.start).format('ddd, D [de] MMMM [de] YYYY')
 
         if (Platform.OS === 'android') {
             datePiker = (
                 <View>
                     <TouchableOpacity onPress={() => this.setState({ showDatePicker: true })}>
                         <Text style={styles.date}>
-                            {dateString}
+                            {`Início: ${dateString}`}
                         </Text>
                     </TouchableOpacity>
                     {this.state.showDatePicker && datePiker}
-
                 </View>
             )
         }
@@ -73,10 +74,18 @@ export default class ActivityAdd extends Component {
                 <View style={styles.container}>
                     <Text style={styles.header}>Nova Atividade</Text>
                     <TextInput style={styles.input}
-                        placeholder="Nome da Atividade..."
+                        placeholder="Atividade..."
                         onChangeText={name => this.setState({ name })}
                         value={this.state.name} />
                     {this.getDatePicker()}
+                    <TextInput style={styles.input}
+                        placeholder="Carga horária..."
+                        onChangeText={workload => this.setState({ workload })}
+                        value={this.state.workload} />
+                    <TextInput style={styles.input}
+                        placeholder="Horas completadas..."
+                        onChangeText={hoursCompleted => this.setState({ hoursCompleted })}
+                        value={this.state.hoursCompleted} />
                     <View style={styles.buttons} >
                         <TouchableOpacity onPress={this.props.onCancel}>
                             <Text style={styles.button}>Cancelar</Text>
