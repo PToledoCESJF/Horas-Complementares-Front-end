@@ -7,27 +7,65 @@ import {
     TouchableOpacity,
     Alert
 } from 'react-native'
+import axios from 'axios'
 
 import backgroundImage from '../../../assets/imgs/welcome.png'
 import commonStyles from '../../commonStyles'
 import AuthInput from '../../components/auth/AuthInput';
+import { server, showError, showSuccess } from '../../common'
+
+const initialState = {
+    name: '',
+    registration: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    stageNew: false
+}
 export default class Auth extends Component {
 
     state = {
-        name: '',
-        registration: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        stageNew: false
+        ...initialState
     }
 
     signinOrSignup = () => {
         if (this.state.stageNew) {
-            Alert.alert('Sucesso!', 'Criar conta')
+            this.signup()
         } else {
-            Alert.alert('Socesso!', 'Logar')
+            this.signin()
         }
+    }
+
+    signup = async () => {
+        try {
+            await axios.post(`${server}/signup`, {
+                name: this.state.name,
+                registration: this.state.registration,
+                email: this.state.email,
+                password: this.state.password,
+                confirmPassword: this.state.confirmPassword,
+            })
+
+            showSuccess('Usuário cadastrado!')
+            this.setState({ ...initialState })
+        } catch (e) {
+            showError(e)
+        }
+    }
+
+    signin = async () => {
+        try {
+            const res = await axios.post(`${server}/signin`, {
+                registration: this.state.registration,
+                password: this.state.password
+            })
+
+            axios.defaults.headers.common['Authorization'] = `bearer ${res.data.token}`
+            this.props.navigation.navigate('Activity')
+        } catch (e) {
+            showError(e)
+        }
+
     }
 
     render() {
@@ -42,9 +80,9 @@ export default class Auth extends Component {
                     {this.state.stageNew &&
                         <AuthInput icon='user' placeholder='Nome' value={this.state.name}
                             style={styles.input} onChangeText={name => this.setState({ name })} />
-                     } 
-                     {this.state.stageNew &&
-                            <AuthInput icon='at' placeholder='Email' value={this.state.email} 
+                    }
+                    {this.state.stageNew &&
+                        <AuthInput icon='at' placeholder='Email' value={this.state.email}
                             style={styles.input} onChangeText={email => this.setState({ email })} />
                     }
                     <AuthInput icon='registered' placeholder='Matrícula' value={this.state.registration}
