@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
         marginLeft: 20
     },
     input: {
+        color: '#000',
         marginLeft: 20,
         width: '70%'
     }
