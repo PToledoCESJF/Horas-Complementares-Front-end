@@ -7,7 +7,8 @@ import {
     FlatList,
     TouchableOpacity,
     Platform,
-    Alert
+    Alert,
+    Text
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -18,7 +19,7 @@ import 'moment/locale/pt-br'
 import { server, showError } from '../../common'
 import Activity from '../../components/activity/Activity'
 import ActivityAdd from './ActivityAdd'
-import topPage from '../../../assets/imgs/top_page.png'
+import topPage from '../../../assets/imgs/top_page_white.png'
 import commonStyles from '../../commonStyles'
 
 const initialState = {
@@ -74,7 +75,7 @@ export default class App extends Component {
         try {
             await axios.put(`${server}/activities/${activityId}/toggle`)
             this.loadActivities()
-        } catch(e) {
+        } catch (e) {
             showError(e)
         }
     }
@@ -105,7 +106,7 @@ export default class App extends Component {
         try {
             await axios.delete(`${server}/activities/${activityId}`)
             this.loadActivities()
-        } catch(e) {
+        } catch (e) {
             showError(e)
         }
     }
@@ -121,15 +122,24 @@ export default class App extends Component {
                 />
                 <ImageBackground source={topPage}
                     style={styles.background}>
-                    <View style={styles.iconBar}>
-                        <TouchableOpacity onPress={this.toggleFilter}>
-                            <Icon
-                                name={this.state.showDoneActivity ? 'eye' : 'eye-slash'}
-                                size={20} color={commonStyles.colors.primary}
-                            />
-                        </TouchableOpacity>
+                    <View style={styles.titleBar}>
+                        <Text style={styles.title}>{this.props.title}</Text>
                     </View>
                 </ImageBackground>
+                <View style={styles.iconBar}>
+                    <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}>
+                        <Icon
+                            name={'bars'}
+                            size={20} color={commonStyles.colors.secondary}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={this.toggleFilter}>
+                        <Icon
+                            name={this.state.showDoneActivity ? 'eye' : 'eye-slash'}
+                            size={20} color={commonStyles.colors.secondary}
+                        />
+                    </TouchableOpacity>
+                </View>
                 <View style={styles.app}>
                     <FlatList
                         data={this.state.visibleActivities}
@@ -165,10 +175,12 @@ const styles = StyleSheet.create({
         marginBottom: 20
     },
     iconBar: {
+        backgroundColor: commonStyles.colors.primary,
         flexDirection: "row",
-        marginHorizontal: 20,
-        justifyContent: 'flex-end',
-        marginTop: Platform.OS === 'ios' ? 40 : 10
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        justifyContent: 'space-between',
+        marginTop: Platform.OS === 'ios' ? 40 : 5
     },
     addButton: {
         position: 'absolute',
@@ -177,8 +189,19 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         borderRadius: 25,
-        backgroundColor: '#009bd9',
+        backgroundColor: commonStyles.colors.primary,
         justifyContent: 'center',
         alignItems: 'center'
-    }
+    },
+    titleBar: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+    },
+    title: {
+        fontFamily: commonStyles.fontFamily,
+        color: commonStyles.colors.tertiaryTransparency,
+        fontSize: 22,
+        fontWeight: 'bold'
+    },
 });
