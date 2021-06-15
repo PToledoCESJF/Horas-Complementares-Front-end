@@ -87,7 +87,7 @@ export default class Auth extends Component {
         return (
             <ImageBackground source={backgroundImage}
                 style={styles.backgroud}>
-                <Text style={styles.title}>Atividades Complementares</Text>
+                <Text style={styles.title}>{`Atividades Complementares`}</Text>
                 <View style={styles.formContainer}>
                     <Text style={styles.subTitle}>
                         {this.state.stageNew ? 'Crie sua conta' : 'Informe seus dados'}
@@ -140,8 +140,9 @@ const styles = StyleSheet.create({
     title: {
         fontFamily: commonStyles.fontFamily,
         color: commonStyles.colors.secondary,
-        fontSize: 30,
-        marginBottom: 10
+        alignItems: 'center',
+        fontSize: 25,
+        marginBottom: 30,
     },
     subTitle: {
         fontFamily: commonStyles.fontFamily,

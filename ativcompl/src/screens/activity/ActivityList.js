@@ -140,6 +140,7 @@ export default class App extends Component {
                         />
                     </TouchableOpacity>
                 </View>
+
                 <View style={styles.app}>
                     <FlatList
                         data={this.state.visibleActivities}
@@ -153,6 +154,7 @@ export default class App extends Component {
                 >
                     <Icon name="plus" size={20} color="#FFF" />
                 </TouchableOpacity>
+                
             </SafeAreaView>
         )
 

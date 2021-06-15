@@ -5,6 +5,7 @@ import {createDrawerNavigator } from 'react-navigation-drawer'
 import Loading from './screens/loading/Loading'
 import Auth from './screens/auth/Auth'
 import ActivityList from './screens/activity/ActivityList'
+import Address from './screens/address/Address'
 
 import Menu from './screens/menu/Menu'
 import commonStyles from './commonStyles'
@@ -42,7 +43,7 @@ const menuRoutes = {
     },
     Address: {
         name: 'Address',
-        screen: props => <ActivityList title='Endereço' {...props} />,
+        screen: props => <Address title='Endereço' {...props} />,
         navigationOptions: {
             title: 'Endereço'
         }
