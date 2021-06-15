@@ -62,7 +62,7 @@ export default class App extends Component {
         if (this.state.showDoneActivity) {
             visibleActivities = [...this.state.activities]
         } else {
-            const pending = activity => activity.closed === null
+            const pending = activity => !activity.closed
             visibleActivities = this.state.activities.filter(pending)
         }
         this.setState({ visibleActivities })
@@ -92,7 +92,8 @@ export default class App extends Component {
                 start: newActivity.start,
                 workload: newActivity.workload,
                 hoursCompleted: newActivity.hoursCompleted,
-                closed: null
+                categoryId: newActivity.categoryId,
+                closed: false
             })
 
             this.setState({ showActivityAdd: false }, this.loadActivities)

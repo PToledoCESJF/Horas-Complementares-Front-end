@@ -10,15 +10,22 @@ import {
     TouchableWithoutFeedback
 } from 'react-native'
 
+import axios from 'axios'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import { Picker } from '@react-native-picker/picker'
 import moment from 'moment'
 
 import commonStyles from '../../commonStyles'
+import { server, showError } from '../../common'
 
 const initialState = {
     name: '',
     start: new Date(),
-    showDatePicker: false
+    workload: '',
+    hoursCompleted: '',
+    categorySelected: '',
+    categories: [],
+    showDatePicker: false,
 }
 
 export default class ActivityAdd extends Component {
@@ -27,12 +34,22 @@ export default class ActivityAdd extends Component {
         ...initialState
     }
 
+    componentDidMount = async () => {
+        try {
+            const res = await axios.get(`${server}/categories`)
+            this.setState({ categories: res.data })
+        } catch (e) {
+            showError(e)
+        }
+    }
+
     save = () => {
         const newActivity = {
             name: this.state.name,
             start: this.state.start,
             workload: this.state.workload,
-            hoursCompleted: this.state.hoursCompleted
+            hoursCompleted: this.state.hoursCompleted,
+            categoryId: this.state.categorySelected,
         }
 
         this.props.onSave && this.props.onSave(newActivity)
@@ -62,6 +79,25 @@ export default class ActivityAdd extends Component {
         return datePiker
     }
 
+    getCategory = () => {
+        return (
+            <View>
+                <Picker
+                    style={styles.category}
+                    selectedValue={this.state.categorySelected}
+                    onValueChange={(itemValue) =>
+                        this.setState({ categorySelected: itemValue })
+                    }>
+                    {
+                        this.state.categories.map(cat => {
+                            return <Picker.Item label={cat.name} value={cat.id} key={cat.id} />
+                        })
+                    }
+                </Picker>
+            </View>
+        )
+    }
+
     render() {
         return (
             <Modal transparent={true} visible={this.props.isVisible}
@@ -77,6 +113,7 @@ export default class ActivityAdd extends Component {
                         placeholder="Atividade..."
                         onChangeText={name => this.setState({ name })}
                         value={this.state.name} />
+                    {this.getCategory()}
                     {this.getDatePicker()}
                     <TextInput style={styles.input}
                         placeholder="Carga horária..."
@@ -99,7 +136,6 @@ export default class ActivityAdd extends Component {
                     onPress={this.props.onCancel}>
                     <View style={styles.background}></View>
                 </TouchableWithoutFeedback>
-
             </Modal>
         )
     }
@@ -108,10 +144,13 @@ export default class ActivityAdd extends Component {
 const styles = StyleSheet.create({
     background: {
         flex: 1,
-        backgroundColor: 'rgba(0, 155, 217, 0.6)'
+        backgroundColor: 'rgba(0,0,0, 0.6)',
+        
     },
     container: {
-        backgroundColor: '#FFF'
+        backgroundColor: '#FFF',
+        borderWidth: 18,
+        borderColor: 'rgba(0,0,0, 0.6)',
     },
     header: {
         fontFamily: commonStyles.fontFamily,
@@ -119,16 +158,17 @@ const styles = StyleSheet.create({
         color: commonStyles.colors.secondary,
         textAlign: 'center',
         padding: 15,
-        fontSize: 18
+        fontSize: 18,
     },
     input: {
         fontFamily: commonStyles.fontFamily,
         height: 40,
         margin: 15,
+        color: '#000',
         backgroundColor: '#FFF',
-        borderWidth: 1,
-        borderColor: '#E3E3E3',
-        borderRadius: 6
+        borderBottomWidth: 1,
+        borderColor: '#A9A9A9',
+        
     },
     buttons: {
         flexDirection: 'row',
@@ -141,8 +181,13 @@ const styles = StyleSheet.create({
     },
     date: {
         fontFamily: commonStyles.fontFamily,
-        fontSize: 13,
+        fontSize: 16,
+        marginBottom: 10,
         marginLeft: 15
+    },
+    category:{ 
+        fontFamily: commonStyles.fontFamily, 
+        marginBottom: 10,
     }
 
 })

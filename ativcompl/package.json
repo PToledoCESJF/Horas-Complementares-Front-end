@@ -13,6 +13,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "github:react-native-community/async-storage",
     "@react-native-community/datetimepicker": "github:react-native-community/datetimepicker",
+    "@react-native-picker/picker": "^1.16.1",
     "axios": "^0.21.1",
     "moment": "^2.29.1",
     "react": "17.0.1",
