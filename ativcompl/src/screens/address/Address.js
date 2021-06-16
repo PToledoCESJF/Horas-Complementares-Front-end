@@ -31,7 +31,7 @@ export default class Address extends Component {
         ...initialState
     }
 
-    componentDidMount = async () => {
+    componentDidMount = () => {
         this.updatePage()
     }
 

@@ -6,6 +6,7 @@ import Loading from './screens/loading/Loading'
 import Auth from './screens/auth/Auth'
 import ActivityList from './screens/activity/ActivityList'
 import Address from './screens/address/Address'
+import Profile from './screens/profile/Profile'
 
 import Menu from './screens/menu/Menu'
 import commonStyles from './commonStyles'
@@ -29,7 +30,7 @@ const menuConfig = {
 const menuRoutes = {
     Profile: {
         name: 'Profile',
-        screen: props => <ActivityList title='Perfil' {...props} />,
+        screen: props => <Profile title='Perfil' {...props} />,
         navigationOptions: {
             title: 'Perfil'
         }

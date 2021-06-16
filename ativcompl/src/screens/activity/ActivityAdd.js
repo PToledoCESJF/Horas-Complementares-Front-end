@@ -11,8 +11,8 @@ import {
 } from 'react-native'
 
 import axios from 'axios'
-import DateTimePicker from '@react-native-community/datetimepicker'
 import { Picker } from '@react-native-picker/picker'
+import DateTimePicker from '@react-native-community/datetimepicker'
 import moment from 'moment'
 
 import commonStyles from '../../commonStyles'
@@ -83,7 +83,7 @@ export default class ActivityAdd extends Component {
         return (
             <View>
                 <Picker
-                    style={styles.category}
+                    style={styles.picker}
                     selectedValue={this.state.categorySelected}
                     onValueChange={(itemValue) =>
                         this.setState({ categorySelected: itemValue })
@@ -97,6 +97,7 @@ export default class ActivityAdd extends Component {
             </View>
         )
     }
+
 
     render() {
         return (
@@ -185,7 +186,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         marginLeft: 15
     },
-    category:{ 
+    picker:{ 
         fontFamily: commonStyles.fontFamily, 
         marginBottom: 10,
     }
