@@ -6,70 +6,77 @@ import {
     TouchableOpacity,
     StyleSheet,
     TouchableWithoutFeedback,
-    Platform,
+    ActivityIndicator,
 } from 'react-native'
 
 import axios from 'axios'
 import { Picker } from '@react-native-picker/picker'
-import DateTimePicker from '@react-native-community/datetimepicker'
-import moment from 'moment'
 
 import { server, showError } from '../../common'
 import commonStyles from '../../commonStyles'
 
 const initialState = {
-    userId: '',
-    courseId: '',
-    startCourse: new Date(),
     usertypeId: 1,
     campus: [],
-    campusSelected: 1,
+    campusSelected: 0,
     courses: [],
-    courseSelected: '',
-    showDatePicker: false,
+    courseSelected: 0,
+    loading: false,
 }
 export default class ProfileAddCourse extends Component {
 
-    state = { 
-        ...initialState 
+    state = {
+        ...initialState
     }
 
-    // componentDidMount = () => {
-    //     try {
-    //         const res = axios.get(`${server}/campus`)
-    //         this.setState({ campus: res.data })
-    //     } catch (e) {
-    //         showError(e)
-    //     }
-    // }
-
-    getCampus = (campus) => {
-        const campusComp = <View>
-            <Picker
-                style={styles.picker}
-                selectedValue={this.state.campusSelected}
-                onValueChange={(itemValue) =>
-                    this.setState({ campusSelected: itemValue })
-                }>
-                {
-                    campus.map(cam => {
-                        return <Picker.Item label={cam.name} value={cam.id} key={cam.id} />
-                    })
-                }
-            </Picker>
-        </View>
-
-        this.loadCourses(this.state.campusSelected)
-        return campusComp
+    componentDidMount = () => {
+        this.setState({ loading: true })
+        this.loadCampus()
+        this.setState({ loading: false })
     }
 
-    loadCourses = (campusId) => {
+    loadCampus = async () => {
         try {
-            const res = axios.get(`${server}/courses/campus/${campusId}`)
+            const res = await axios.get(`${server}/campus`)
+            this.setState({ campus: res.data })
+        } catch (e) {
+            showError(e)
+
+        }
+    }
+
+    loadCourses = async (campusId) => {
+
+        try {
+            const res = await axios.get(`${server}/courses/campus/${campusId}`)
             this.setState({ courses: res.data })
         } catch (e) {
             showError(e)
         }
+
+    }
+
+    getCampus = () => {
+        let campusComp = <Text>Selecione uma Unidade</Text>
+        if (this.state.campus.length) {
+            campusComp = <View>
+                <Picker
+                    style={styles.picker}
+                    selectedValue={this.state.campusSelected}
+                    onValueChange={(itemValue) =>
+                        this.setState({ campusSelected: itemValue })
+                    }>
+                    {
+                        this.state.campus.map(cam => {
+                            return <Picker.Item label={cam.name} value={cam.id} key={cam.id} />
+                        })
+                    }
+                </Picker>
+            </View>
+        }
+
+        this.loadCourses(this.state.campusSelected)
+        return campusComp
     }
 
     getCourses = () => {
@@ -91,39 +98,17 @@ export default class ProfileAddCourse extends Component {
         )
     }
 
-    // getDatePicker = () => {
-    //     let datePiker = <DateTimePicker value={this.state.startCourse}
-    //         onChange={(_, startCourse) => this.setState({ startCourse, showDatePicker: false })}
-    //         mode='date'
-    //     />
-
-    //     const dateString = moment(this.state.startCourse).format('ddd, D [de] MMMM [de] YYYY')
-
-    //     if (Platform.OS === 'android') {
-    //         datePiker = (
-    //             <View>
-    //                 <TouchableOpacity onPress={() => this.setState({ showDatePicker: true })}>
-    //                     <Text style={styles.date}>
-    //                         {dateString}
-    //                     </Text>
-    //                 </TouchableOpacity>
-    //                 {this.state.showDatePicker && datePiker}
-    //             </View>
-    //         )
-    //     }
-    //     return datePiker
-    // }
-
     save = () => {
-        const campusCurse = {
-            userI: this.state.userId,
-            courseId: this.state.courseId,
-            startCourse: this.state.startCourse,
+        if (this.state.courseSelected <= 0) {
+
+            Alert.alert('Dados Inválidos', 'Curso courseSelected.')
+        }
+        const campusCourse = {
+            courseId: this.state.courseSelected,
             usertypeId: this.state.usertypeId
         }
 
-        this.props.onSave && this.props.onSave(campusCurse)
-
+        this.props.onSave && this.props.onSave(campusCourse)
     }
 
     render() {
@@ -137,26 +122,30 @@ export default class ProfileAddCourse extends Component {
                     onPress={this.props.onCancel}>
                     <View style={styles.background}></View>
                 </TouchableWithoutFeedback>
-                <View style={styles.container}>
-                    <Text style={styles.header}>Cursos</Text>
-                    <Text style={styles.label}>Campus</Text>
-                    {this.getCampus(this.props.campus)}
-                    <Text style={styles.divider}/>
-                    <Text style={styles.label}>Cursos</Text>
-                    {this.getCourses()}
-                    <Text style={styles.divider}/>
-                    <Text style={styles.label}>Iniciou o curso em:</Text>
-                    {this.getDatePicker()}
-                    <Text style={styles.divider}/>
-                    <View style={styles.buttons} >
-                        <TouchableOpacity onPress={this.props.onCancel}>
-                            <Text style={styles.button}>Cancelar</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={this.save}>
-                            <Text style={styles.button}>Salvar</Text>
-                        </TouchableOpacity>
+                {this.state.loading
+                    && <ActivityIndicator color={commonStyles.colors.primary}
+                        size={50} style={{ alignContent: 'center', height: '40%' }} />
+                    ||
+                    <View style={styles.container}>
+                        <Text style={styles.header}>Cursos</Text>
+
+                        <Text style={styles.label}>Campus</Text>
+                        {this.getCampus()}
+                        <Text style={styles.divider} />
+
+                        <Text style={styles.label}>Cursos</Text>
+                        {this.getCourses()}
+                        <Text style={styles.divider} />
+                        <View style={styles.buttons} >
+                            <TouchableOpacity onPress={this.props.onCancel}>
+                                <Text style={styles.button}>Cancelar</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={this.save}>
+                                <Text style={styles.button}>Salvar</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
+                }
                 <TouchableWithoutFeedback
                     onPress={this.props.onCancel}>
                     <View style={styles.background}></View>

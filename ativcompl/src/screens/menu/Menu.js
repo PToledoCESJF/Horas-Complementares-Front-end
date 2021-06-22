@@ -30,9 +30,6 @@ export default props => {
                     <Text style={styles.name}>
                         {props.navigation.getParam('name')}
                     </Text>
-                    <Text style={styles.registration}>
-                        {props.navigation.getParam('registration')}
-                    </Text>
                     <Text style={styles.email}>
                         {props.navigation.getParam('email')}
                     </Text>

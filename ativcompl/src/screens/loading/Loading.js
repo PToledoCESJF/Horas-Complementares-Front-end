@@ -30,7 +30,7 @@ export default class Loading extends Component {
 
         return (
             <View style={styles.container}>
-                <ActivityIndicator size='large' />
+                <ActivityIndicator size='large' color={commonStyles.colors.secondary} />
             </View>
         )
     }
