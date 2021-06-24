@@ -17,7 +17,7 @@ import 'moment/locale/pt-br'
 
 import { server, showError } from '../../common'
 import Activity from '../../components/activity/Activity'
-import ActivityAdd from './ActivityAdd'
+import Header from '../../components/header/Header'
 import topPage from '../../../assets/imgs/top_page_white.png'
 import commonStyles from '../../commonStyles'
 
@@ -92,12 +92,7 @@ export default class App extends Component {
     render() {
         return (
             <SafeAreaView style={styles.container}>
-                <ImageBackground source={topPage}
-                    style={styles.background}>
-                    <View style={styles.titleBar}>
-                        <Text style={styles.title}>Atividades</Text>
-                    </View>
-                </ImageBackground>
+                <Header title='Atividades' />       
                 <View style={styles.iconBar}>
                     <TouchableOpacity /* onPress={() => this.props.drawer()} */>
                         <Icon
@@ -118,7 +113,6 @@ export default class App extends Component {
                         />
                     </TouchableOpacity>
                 </View>
-
                 <View style={styles.app}>
                     <FlatList
                         data={this.state.visibleActivities}

@@ -19,6 +19,7 @@ import moment from 'moment'
 import commonStyles from '../../commonStyles'
 import { server, showError } from '../../common'
 import topPage from '../../../assets/imgs/top_page_white.png'
+import Header from '../../components/header/Header'
 
 const initialState = {
     id: '',
@@ -190,12 +191,7 @@ export default class ActivityAdd extends Component {
         return (
             <SafeAreaView style={styles.container}>
                 <ScrollView>
-                    <ImageBackground source={topPage}
-                        style={styles.background}>
-                        <View style={styles.titleBar}>
-                            <Text style={styles.title}>{this.props.title}</Text>
-                        </View>
-                    </ImageBackground>
+                    <Header title='Atividade' />
                     <View style={styles.iconBar}>
                         <TouchableOpacity /* style={styles.addButton} */
                             onPress={() => this.props.navigation.goBack()} >
