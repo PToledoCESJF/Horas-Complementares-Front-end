@@ -7,7 +7,6 @@ import {
     FlatList,
     TouchableOpacity,
     Platform,
-    Alert,
     Text
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
@@ -58,11 +57,11 @@ export default class App extends Component {
     }
 
     filterActivities = () => {
-        let visibleActivities = null
+        let visibleActivities = false
         if (this.state.showDoneActivity) {
             visibleActivities = [...this.state.activities]
         } else {
-            const pending = activity => !activity.closed
+            const pending = activity => !activity.completed
             visibleActivities = this.state.activities.filter(pending)
         }
         this.setState({ visibleActivities })
@@ -75,28 +74,6 @@ export default class App extends Component {
         try {
             await axios.put(`${server}/activities/${activityId}/toggle`)
             this.loadActivities()
-        } catch (e) {
-            showError(e)
-        }
-    }
-
-    addActivity = async newActivity => {
-        if (!newActivity.name || !newActivity.name.trim()) {
-            Alert.alert('Dados Inválidos', 'Nome da Atividade não informado.')
-            return
-        }
-
-        try {
-            await axios.post(`${server}/activities`, {
-                name: newActivity.name,
-                start: newActivity.start,
-                workload: newActivity.workload,
-                hoursCompleted: newActivity.hoursCompleted,
-                categoryId: newActivity.categoryId,
-                closed: false
-            })
-
-            this.setState({ showActivityAdd: false }, this.loadActivities)
 
         } catch (e) {
             showError(e)
@@ -113,22 +90,16 @@ export default class App extends Component {
     }
 
     render() {
-
         return (
             <SafeAreaView style={styles.container}>
-                <ActivityAdd
-                    isVisible={this.state.showActivityAdd}
-                    onCancel={() => this.setState({ showActivityAdd: false })}
-                    onSave={this.addActivity}
-                />
                 <ImageBackground source={topPage}
                     style={styles.background}>
                     <View style={styles.titleBar}>
-                        <Text style={styles.title}>{this.props.title}</Text>
+                        <Text style={styles.title}>Atividades</Text>
                     </View>
                 </ImageBackground>
                 <View style={styles.iconBar}>
-                    <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}>
+                    <TouchableOpacity /* onPress={() => this.props.drawer()} */>
                         <Icon
                             name={'bars'}
                             size={20} color={commonStyles.colors.secondary}
@@ -140,22 +111,33 @@ export default class App extends Component {
                             size={20} color={commonStyles.colors.secondary}
                         />
                     </TouchableOpacity>
+                    <TouchableOpacity /* onPress={this.toggleFilter} */>
+                        <Icon
+                            name={'bell-o'}
+                            size={20} color={commonStyles.colors.secondary}
+                        />
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.app}>
                     <FlatList
                         data={this.state.visibleActivities}
                         keyExtractor={item => `${item.id}`}
-                        renderItem={({ item }) => <Activity {...item} onToggleActivity={this.toggleActivity} onDelete={this.deleteActivity} />}
-                    />
+                        renderItem={({ item }) =>
+                            <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('ActivityAdd', item)}
+
+                            >
+                                <Activity {...item} onToggleActivity={this.toggleActivity} onDelete={this.deleteActivity} />
+                            </TouchableOpacity>
+                        } />
                 </View>
                 <TouchableOpacity style={styles.addButton}
                     activeOpacity={0.5}
-                    onPress={() => this.setState({ showActivityAdd: true })}
+                    onPress={() => this.props.navigation.navigate('ActivityAdd')}
                 >
                     <Icon name="plus" size={20} color="#FFF" />
                 </TouchableOpacity>
-                
             </SafeAreaView>
         )
 
@@ -171,11 +153,7 @@ const styles = StyleSheet.create({
     },
     app: {
         flex: 8,
-        fontFamily: commonStyles.fontFamily,
-        color: commonStyles.colors.secondary,
-        fontSize: 50,
-        marginLeft: 20,
-        marginBottom: 20
+        marginTop: 20
     },
     iconBar: {
         backgroundColor: commonStyles.colors.primary,
