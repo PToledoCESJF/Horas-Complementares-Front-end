@@ -1,13 +1,11 @@
 import React, { Component } from 'react'
 import {
     View,
-    ImageBackground,
     StyleSheet,
     SafeAreaView,
     FlatList,
     TouchableOpacity,
     Platform,
-    Text
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -18,7 +16,6 @@ import 'moment/locale/pt-br'
 import { server, showError } from '../../common'
 import Activity from '../../components/activity/Activity'
 import Header from '../../components/header/Header'
-import topPage from '../../../assets/imgs/top_page_white.png'
 import commonStyles from '../../commonStyles'
 
 const initialState = {
@@ -94,7 +91,8 @@ export default class App extends Component {
             <SafeAreaView style={styles.container}>
                 <Header title='Atividades' />       
                 <View style={styles.iconBar}>
-                    <TouchableOpacity /* onPress={() => this.props.drawer()} */>
+                    <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}
+                        /* onPress={() => this.props.navigation.navigate('Menu')} */>
                         <Icon
                             name={'bars'}
                             size={20} color={commonStyles.colors.secondary}

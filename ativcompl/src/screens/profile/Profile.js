@@ -1,31 +1,30 @@
 import React, { Component } from 'react'
 import {
     View,
-    ImageBackground,
     StyleSheet,
     SafeAreaView,
     TouchableOpacity,
     Platform,
     Alert,
     Text,
-    TextInput,
     ActivityIndicator,
     FlatList,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
+import { Avatar } from "react-native-elements"
+import { Gravatar } from 'react-native-gravatar'
 import { server, showError } from '../../common'
-import topPage from '../../../assets/imgs/top_page_white.png'
-import ProfileEdit from './ProfileEdit'
 import commonStyles from '../../commonStyles'
+import Header from '../../components/header/Header'
 import ProfileAddCourse from './ProfileAddCourse'
 
 const initialState = {
     name: '',
     registration: '',
     email: '',
+    uri: 'https://cdn.pixabay.com/photo/2016/03/31/19/57/avatar-1295406_960_720.png',
     firstAccess: true,
     showProfileEdit: false,
     showProfileAddCourse: false,
@@ -102,16 +101,16 @@ export default class Profile extends Component {
         this.loadProfile()
     }
 
-    addCourse = async campusCourse => {
-        if (campusCourse.courseId <= 0) {
+    addCourse = async newCourse => {
+        if (newCourse.courseId <= 0) {
             Alert.alert('Dados Inválidos', 'Curso não informado.')
             return
         }
 
         try {
             await axios.post(`${server}/users_courses`, {
-                courseId: campusCourse.courseId,
-                usertypeId: campusCourse.usertypeId
+                courseId: newCourse.courseId,
+                usertypeId: newCourse.usertypeId
             })
 
             this.setState({ showProfileAddCourse: false })
@@ -129,26 +128,27 @@ export default class Profile extends Component {
     render() {
         return (
             <SafeAreaView style={styles.container}>
-                <ProfileEdit {...this.state}
+                {/* <ProfileEdit {...this.state}
                     isVisible={this.state.showProfileEdit}
                     onCancel={() => this.setState({ showProfileEdit: false })}
                     onSave={this.updateProfile}
-                />
+                /> */}
                 <ProfileAddCourse
                     isVisible={this.state.showProfileAddCourse}
                     onCancel={() => this.setState({ showProfileAddCourse: false })}
                     onSave={this.addCourse}
                 />
-                <ImageBackground source={topPage}
-                    style={styles.background}>
-                    <View style={styles.titleBar}>
-                        <Text style={styles.title}>{this.props.title}</Text>
-                    </View>
-                </ImageBackground>
+                <Header title='Perfil' />
                 <View style={styles.iconBar}>
                     <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}>
                         <Icon
                             name={'bars'}
+                            size={20} color={commonStyles.colors.secondary}
+                        />
+                    </TouchableOpacity>
+                    <TouchableOpacity /* onPress={() => this.props.navigation.openDrawer()} */>
+                        <Icon
+                            name={'bell-o'}
                             size={20} color={commonStyles.colors.secondary}
                         />
                     </TouchableOpacity>
@@ -174,12 +174,36 @@ export default class Profile extends Component {
                                 </TouchableOpacity>
                             </View>
                         </View> */}
-                        <Text style={styles.label}>Nome</Text>
-                        <Text style={styles.input}>{this.state.name}</Text>
-                        <Text style={styles.label}>Matrícula</Text>
-                        <Text style={styles.input}>{this.state.registration}</Text>
-                        <Text style={styles.label}>Email</Text>
-                        <Text style={styles.input}>{this.state.email}</Text>
+                        {/* <Gravatar style={styles.avatar}
+                            options={{
+                                email: 'paulodat.902522195@uniacademia.edu.br',
+                                secure: true
+                            }}
+                        /> */}
+                        <View style={styles.dataProfile}>
+                            <View style={styles.dataAvatar}>
+                                <Avatar
+                                    style={styles.avatar}
+                                    size="large"
+                                    rounded
+                                    source={{
+                                        uri: this.state.uri,
+                                    }}
+                                />
+                            </View>
+                            <View style={styles.datas}>
+                                {/* <Text style={styles.label}>Nome</Text> */}
+                                <Text style={styles.input}>{this.state.name}</Text>
+                                {/* <Text style={styles.label}>Matrícula</Text> */}
+                                <Text style={styles.input}>
+                                <Text style={styles.label}>Matrícula: </Text>
+                                    {this.state.registration}
+                                </Text>
+                                {/* <Text style={styles.label}>Email</Text> */}
+                                <Text style={styles.input}>{this.state.email}</Text>
+                            </View>
+                        </View>
+
                         {/* <View style={styles.editComp}>
                             <View style={styles.editFields}>
                                 <Text style={styles.editLabel}>Email</Text>
@@ -205,14 +229,16 @@ export default class Profile extends Component {
                                     <Text style={styles.courses}>{item.name}</Text>
                                 } />
                         </View>
-                        <TouchableOpacity onPress={() => this.setState({ showProfileEdit: true })}>
+                        {/* <TouchableOpacity onPress={() => this.setState({ showProfileEdit: true })}>
                             <View style={styles.buttons} >
                                 <View style={styles.button}>
                                     <Text style={styles.buttonText}>Editar perfil</Text>
                                 </View>
                             </View>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => this.setState({ showProfileAddCourse: true })}>
+                        </TouchableOpacity> */}
+                        <TouchableOpacity
+                            // onPress={() => this.setState({ showProfileAddCourse: true })}
+                            onPress={() => this.props.navigation.navigate('UserCourse')}>
                             <View style={styles.buttons} >
                                 <View style={styles.button}>
                                     <Text style={styles.buttonText}>Iniciar curso</Text>
@@ -228,7 +254,8 @@ export default class Profile extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: commonStyles.colors.secondary,
     },
     background: {
         flex: 2
@@ -236,7 +263,6 @@ const styles = StyleSheet.create({
     app: {
         flex: 8,
         fontFamily: commonStyles.fontFamily,
-        color: commonStyles.colors.secondary,
         fontSize: 50,
         marginBottom: 20,
         marginTop: 20
@@ -248,6 +274,26 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         justifyContent: 'space-between',
         marginTop: Platform.OS === 'ios' ? 40 : 5
+    },
+    dataProfile: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 20
+    },
+    dataAvatar: {
+        width: '25%',
+    },
+    datas: {
+        width: '75%',
+        marginTop: 10
+    },
+    avatar: {
+        width: 80,
+        height: 80,
+        borderWidth: 3,
+        borderRadius: 40,
+        margin: 10,
+        borderColor: commonStyles.colors.primaryTransparency
     },
     titleBar: {
         flex: 1,
@@ -266,7 +312,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 18,
         color: commonStyles.colors.tertiaryTransparency,
         backgroundColor: '#FFF',
-        fontSize: 18,
+        fontSize: 16,
     },
     buttons: {
         flexDirection: 'row',
@@ -286,21 +332,22 @@ const styles = StyleSheet.create({
     },
     input: {
         fontFamily: commonStyles.fontFamily,
-        height: 30,
+        height: 20,
         marginHorizontal: 18,
         color: '#000',
-        backgroundColor: '#FFF',
-        borderBottomWidth: 1,
-        borderColor: '#A9A9A9',
-        marginBottom: 10,
+        fontSize: 14,
+        // backgroundColor: '#FFF',
+        // borderBottomWidth: 1,
+        // borderColor: '#A9A9A9',
+        marginBottom: 5,
     },
     label: {
         fontFamily: commonStyles.fontFamily,
         height: 20,
         marginHorizontal: 18,
         color: commonStyles.colors.primary,
-        borderColor: '#A9A9A9',
-        backgroundColor: '#FFF',
+        // borderColor: '#A9A9A9',
+        // backgroundColor: '#FFF',
         fontSize: 12,
         fontWeight: 'bold',
     },
@@ -332,5 +379,5 @@ const styles = StyleSheet.create({
     editButtom: {
         justifyContent: 'center',
         alignItems: 'center'
-    }
+    },
 });

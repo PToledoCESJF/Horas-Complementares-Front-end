@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import ActivityList from './ActivityList'
 import ActivityAdd from './ActivityAdd'
+import Menu from '../menu/Menu'
 
 const Stack = createStackNavigator()
 
@@ -25,6 +26,11 @@ export default (props) => {
                     <Stack.Screen name='ActivityAdd'>
                         {props => (
                             <ActivityAdd {...props} />
+                        )}
+                    </Stack.Screen>
+                    <Stack.Screen name='Menu'>
+                        {props => (
+                            <Menu {...props} />
                         )}
                     </Stack.Screen>
 

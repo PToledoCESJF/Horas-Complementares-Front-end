@@ -3,8 +3,8 @@ import {
     Platform,
     View,
     SafeAreaView,
-    ImageBackground,
     Text,
+    Alert,
     TouchableOpacity,
     TextInput,
     StyleSheet,
@@ -18,7 +18,6 @@ import moment from 'moment'
 
 import commonStyles from '../../commonStyles'
 import { server, showError } from '../../common'
-import topPage from '../../../assets/imgs/top_page_white.png'
 import Header from '../../components/header/Header'
 
 const initialState = {
@@ -38,21 +37,21 @@ const initialState = {
 export default class ActivityAdd extends Component {
 
     state = !this.props.route.params ? initialState
-    : {
-        id: this.props.route.params.id,
-        name: this.props.route.params.name,
-        start: this.props.route.params.start,
-        end: this.props.route.params.end,
-        workload: this.props.route.params.workload,
-        categorySelected: this.props.route.params.categoryId,
-        courseSelected: this.props.route.params.courseId
-    } 
+        : {
+            id: this.props.route.params.id,
+            name: this.props.route.params.name,
+            start: this.props.route.params.start,
+            end: this.props.route.params.end,
+            workload: this.props.route.params.workload,
+            categorySelected: this.props.route.params.categoryId,
+            courseSelected: this.props.route.params.courseId
+        }
 
     componentDidMount = async () => {
-                
+
         try {
             const resCategory = await axios.get(`${server}/categories`)
-            const resCourse = await axios.get(`${server}/courses`)
+            const resCourse = await axios.get(`${server}/users_courses`)
             this.setState({ categories: resCategory.data, courses: resCourse.data })
         } catch (e) {
             showError(e)
@@ -186,7 +185,6 @@ export default class ActivityAdd extends Component {
         )
     }
 
-
     render() {
         return (
             <SafeAreaView style={styles.container}>
@@ -198,12 +196,6 @@ export default class ActivityAdd extends Component {
                             <Icon
                                 name="arrow-left"
                                 size={20} color={commonStyles.colors.secondary} />
-                        </TouchableOpacity>
-                        <TouchableOpacity /* onPress={() => this.props.navigation.openDrawer()} */>
-                            <Icon
-                                name={'bars'}
-                                size={20} color={commonStyles.colors.secondary}
-                            />
                         </TouchableOpacity>
                         <TouchableOpacity /* onPress={() => this.props.navigation.openDrawer()} */>
                             <Icon
@@ -229,15 +221,12 @@ export default class ActivityAdd extends Component {
                         {this.getCategory()}
                         <Text style={styles.label}>Curso</Text>
                         {this.getCourse()}
-                        <View style={styles.buttons} >
-                            <TouchableOpacity onPress={() => this.addActivity()}>
+                        <TouchableOpacity onPress={() => this.addActivity()}>
+                            <View style={styles.buttons} >
                                 <Text style={styles.button}>Salvar</Text>
-                            </TouchableOpacity>
-                        </View>
-
+                            </View>
+                        </TouchableOpacity>
                     </View>
-
-
                 </ScrollView>
             </SafeAreaView>
         )

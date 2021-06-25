@@ -17,8 +17,6 @@ import commonStyles from '../../commonStyles'
 
 const initialState = {
     usertypeId: 1,
-    campus: [],
-    campusSelected: 0,
     courses: [],
     courseSelected: 0,
     loading: false,
@@ -31,52 +29,21 @@ export default class ProfileAddCourse extends Component {
 
     componentDidMount = () => {
         this.setState({ loading: true })
-        this.loadCampus()
+        this.loadCourses()
         this.setState({ loading: false })
     }
 
-    loadCampus = async () => {
-        try {
-            const res = await axios.get(`${server}/campus`)
-            this.setState({ campus: res.data })
-        } catch (e) {
-            showError(e)
+    
 
-        }
-    }
-
-    loadCourses = async (campusId) => {
+    loadCourses = async () => {
 
         try {
-            const res = await axios.get(`${server}/courses/campus/${campusId}`)
+            const res = await axios.get(`${server}/courses`)
             this.setState({ courses: res.data })
         } catch (e) {
             showError(e)
         }
 
-    }
-
-    getCampus = () => {
-        let campusComp = <Text>Selecione uma Unidade</Text>
-        if (this.state.campus.length) {
-            campusComp = <View>
-                <Picker
-                    style={styles.picker}
-                    selectedValue={this.state.campusSelected}
-                    onValueChange={(itemValue) =>
-                        this.setState({ campusSelected: itemValue })
-                    }>
-                    {
-                        this.state.campus.map(cam => {
-                            return <Picker.Item label={cam.name} value={cam.id} key={cam.id} />
-                        })
-                    }
-                </Picker>
-            </View>
-        }
-
-        this.loadCourses(this.state.campusSelected)
-        return campusComp
     }
 
     getCourses = () => {
@@ -103,12 +70,12 @@ export default class ProfileAddCourse extends Component {
 
             Alert.alert('Dados Inválidos', 'Curso courseSelected.')
         }
-        const campusCourse = {
+        const newCourse = {
             courseId: this.state.courseSelected,
             usertypeId: this.state.usertypeId
         }
 
-        this.props.onSave && this.props.onSave(campusCourse)
+        this.props.onSave && this.props.onSave(newCourse)
     }
 
     render() {
@@ -128,10 +95,6 @@ export default class ProfileAddCourse extends Component {
                     ||
                     <View style={styles.container}>
                         <Text style={styles.header}>Cursos</Text>
-
-                        <Text style={styles.label}>Campus</Text>
-                        {this.getCampus()}
-                        <Text style={styles.divider} />
 
                         <Text style={styles.label}>Cursos</Text>
                         {this.getCourses()}
