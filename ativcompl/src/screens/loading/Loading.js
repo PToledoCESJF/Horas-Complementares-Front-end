@@ -17,17 +17,20 @@ export default class Loading extends Component {
             // userData está inválido
         }
 
-        if(userData && userData.token){
+        if (userData && userData.token) {
             axios.defaults.headers.common['Authorization'] = `bearer ${userData.token}`
-            this.props.navigation.navigate('Home', userData)
+
+            if (userData.usertypeId == 1) {
+                this.props.navigation.navigate('Home', userData)
+            } else {
+                this.props.navigation.navigate('HomeCS', userData)
+            }
         } else {
             this.props.navigation.navigate('Auth')
-
         }
     }
 
     render() {
-
         return (
             <View style={styles.container}>
                 <ActivityIndicator size='large' color={commonStyles.colors.secondary} />

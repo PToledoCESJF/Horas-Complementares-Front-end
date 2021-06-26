@@ -256,7 +256,8 @@ export default class Profile extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: commonStyles.colors.secondary,
+        // backgroundColor: commonStyles.colors.secondary,
+        backgroundColor: 'red',
     },
     background: {
         flex: 2

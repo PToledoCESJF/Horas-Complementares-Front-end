@@ -9,6 +9,7 @@ import {
     TextInput,
     StyleSheet,
     ScrollView,
+    Modal,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import axios from 'axios'
@@ -36,16 +37,17 @@ const initialState = {
 
 export default class ActivityAdd extends Component {
 
-    state = !this.props.route.params ? initialState
-        : {
-            id: this.props.route.params.id,
-            name: this.props.route.params.name,
-            start: this.props.route.params.start,
-            end: this.props.route.params.end,
-            workload: this.props.route.params.workload,
-            categorySelected: this.props.route.params.categoryId,
-            courseSelected: this.props.route.params.courseId
-        }
+    state = { ...initialState }
+    // !this.props.route.params ? initialState
+    //     : {
+    //         id: this.props.route.params.id,
+    //         name: this.props.route.params.name,
+    //         start: this.props.route.params.start,
+    //         end: this.props.route.params.end,
+    //         workload: this.props.route.params.workload,
+    //         categorySelected: this.props.route.params.categoryId,
+    //         courseSelected: this.props.route.params.courseId
+    //     }
 
     componentDidMount = async () => {
 
@@ -187,12 +189,16 @@ export default class ActivityAdd extends Component {
 
     render() {
         return (
+            <Modal transparent={false}
+                visible={this.props.isVisible}
+                onRequestClose={this.props.onCancel}
+                animationType="slide">
             <SafeAreaView style={styles.container}>
                 <ScrollView>
-                    <Header title='Atividade' />
+                    <Header />
                     <View style={styles.iconBar}>
                         <TouchableOpacity /* style={styles.addButton} */
-                            onPress={() => this.props.navigation.goBack()} >
+                            onPress={this.props.onCancel} >
                             <Icon
                                 name="arrow-left"
                                 size={20} color={commonStyles.colors.secondary} />
@@ -229,13 +235,15 @@ export default class ActivityAdd extends Component {
                     </View>
                 </ScrollView>
             </SafeAreaView>
+            </Modal>
         )
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        // marginTop: 60
     },
     background: {
         flex: 2

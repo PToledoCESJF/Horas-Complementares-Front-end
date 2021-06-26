@@ -17,6 +17,7 @@ import { server, showError } from '../../common'
 import Activity from '../../components/activity/Activity'
 import Header from '../../components/header/Header'
 import commonStyles from '../../commonStyles'
+import ActivityAdd from './ActivityAdd'
 
 const initialState = {
     showActivityAdd: false,
@@ -89,10 +90,15 @@ export default class App extends Component {
     render() {
         return (
             <SafeAreaView style={styles.container}>
+                <ActivityAdd {...this.state}
+                    isVisible={this.state.showActivityAdd}
+                    onCancel={() => this.setState({ showActivityAdd: false })}
+                    // onSave={this.updateProfile}
+                />
                 <Header title='Atividades' />       
                 <View style={styles.iconBar}>
-                    <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}
-                        /* onPress={() => this.props.navigation.navigate('Menu')} */>
+                    <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}>
+                         {/* onPress={() => this.props.navigation.navigate('Menu')}  */}
                         <Icon
                             name={'bars'}
                             size={20} color={commonStyles.colors.secondary}
@@ -126,7 +132,8 @@ export default class App extends Component {
                 </View>
                 <TouchableOpacity style={styles.addButton}
                     activeOpacity={0.5}
-                    onPress={() => this.props.navigation.navigate('ActivityAdd')}
+                    // onPress={() => this.props.navigation.navigate('ActivityAdd')}
+                    onPress={() => this.setState({ showActivityAdd: true })}
                 >
                     <Icon name="plus" size={20} color="#FFF" />
                 </TouchableOpacity>
@@ -138,7 +145,9 @@ export default class App extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: commonStyles.colors.secondary,
+
     },
     background: {
         flex: 2

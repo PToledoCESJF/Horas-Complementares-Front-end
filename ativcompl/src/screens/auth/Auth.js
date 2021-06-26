@@ -5,7 +5,6 @@ import {
     StyleSheet,
     View,
     TouchableOpacity,
-    Alert
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
@@ -21,7 +20,9 @@ const initialState = {
     email: '',
     password: '',
     confirmPassword: '',
-    stageNew: false
+    avatar: 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png',
+    usertypeId: 1,
+    stageNew: false,
 }
 export default class Auth extends Component {
 
@@ -45,6 +46,8 @@ export default class Auth extends Component {
                 email: this.state.email,
                 password: this.state.password,
                 confirmPassword: this.state.confirmPassword,
+                avatar: this.state.avatar,
+                usertypeId: this.state.usertypeId
             })
 
             showSuccess('Usuário cadastrado!')
@@ -63,7 +66,12 @@ export default class Auth extends Component {
 
             AsyncStorage.setItem('userData', JSON.stringify(res.data))
             axios.defaults.headers.common['Authorization'] = `bearer ${res.data.token}`
-            this.props.navigation.navigate('Home', res.data)
+            const login = res.data
+            if(login.usertypeId == 1){
+                this.props.navigation.navigate('Home', res.data)
+            } else {
+                this.props.navigation.navigate('HomeCS', res.data)
+            }
         } catch (e) {
             showError(e)
         }
@@ -71,11 +79,10 @@ export default class Auth extends Component {
     }
 
     render() {
-
         const validations = []
         validations.push(this.state.registration)
         validations.push(this.state.password && this.state.password.length >= 6)
-        
+
         if (this.state.stageNew) {
             validations.push(this.state.name && this.state.name.trim().length >= 3)
             validations.push(this.state.email && this.state.email.includes('@'))
@@ -111,7 +118,7 @@ export default class Auth extends Component {
                             onChangeText={confirmPassword => this.setState({ confirmPassword })} />
                     }
                     <TouchableOpacity onPress={this.signinOrSignup} disabled={!validForm}>
-                        <View style={[styles.button, validForm ? {} : { backgroundColor: '#AAA'} ]}>
+                        <View style={[styles.button, validForm ? {} : { backgroundColor: '#AAA' }]}>
                             <Text style={styles.buttonText}>
                                 {this.state.stageNew ? 'Registrar' : 'Entrar'}
                             </Text>
