@@ -5,8 +5,8 @@ import {
     SafeAreaView,
     Text,
     TouchableOpacity,
-    Alert,
     StyleSheet,
+    Modal,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import axios from 'axios'
@@ -21,19 +21,18 @@ import Header from '../../components/header/Header'
 const initialState = {
     start: new Date(),
     courseId: 1,
-    usertypeId: 1,
     courses: [],
     showDateStartPicker: false,
 }
 
 export default class UserCourse extends Component {
 
-    state = !this.props.route.params ? initialState
-        : {
-            start: this.props.route.params.start,
-            courseId: this.props.route.params.courseId,
-            usertypeId: this.props.route.params.usertypeId,
-        }
+    state = { ...initialState }
+    // !this.props.route.params ? initialState
+    //     : {
+    //         start: this.props.route.params.start,
+    //         courseId: this.props.route.params.courseId,
+    //     }
 
     componentDidMount = async () => {
         try {
@@ -44,26 +43,35 @@ export default class UserCourse extends Component {
         }
     }
 
-    addUserCourse = async () => {
-        if (this.state.courseId <= 0) {
-            Alert.alert('Dados Inválidos', 'Curso não informado.')
-            return
+    // addUserCourse = async () => {
+    //     if (this.state.courseId <= 0) {
+    //         Alert.alert('Dados Inválidos', 'Curso não informado.')
+    //         return
+    //     }
+
+    //     try {
+    //         await axios.post(`${server}/users_courses`, {
+    //             start: this.state.start,
+    //             courseId: this.state.courseId,
+    //         })
+
+    //         Alert.alert('Sucesso!', 'Curso cadastrado com sucesso.')
+
+    //         this.props.onCancel && this.props.onCancel()
+
+    //     } catch (e) {
+    //         Alert.alert('Erro!', 'Curso não cadastrado.')
+    //         showError(e)
+    //     }
+    // }
+
+    save = () => {
+        const newCourse = {
+            start: this.state.start,
+            courseId: this.state.courseId
         }
 
-        try {
-            await axios.post(`${server}/users_courses`, {
-                start: this.state.start,
-                courseId: this.state.courseId,
-                usertypeId: this.state.usertypeId,
-            })
-
-            Alert.alert('Sucesso!', 'Curso cadastrado com sucesso.')
-            // this.props.navigation.goBack()
-
-        } catch (e) {
-            Alert.alert('Erro!', 'Curso não cadastrado.')
-            showError(e)
-        }
+        this.props.onSave && this.props.onSave(newCourse)
     }
 
     getDateStarPicker = () => {
@@ -112,42 +120,49 @@ export default class UserCourse extends Component {
 
     render() {
         return (
-            <SafeAreaView style={styles.container}>
-                <Header title='Cursos' />
-                <View style={styles.iconBar}>
-                    <TouchableOpacity 
-                        onPress={() => this.props.navigation.openDrawer()}>
-                        <Icon
-                            name={'bars'}
-                            size={20} color={commonStyles.colors.secondary}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity 
-                        onPress={() => this.props.navigation.goBack()} >
-                        <Icon
-                            name="arrow-circle-left"
-                            size={20} color={commonStyles.colors.secondary} />
-                    </TouchableOpacity>
-                    <TouchableOpacity /* onPress={() => this.props.navigation.openDrawer()} */>
-                        <Icon
-                            name={'bell-o'}
-                            size={20} color={commonStyles.colors.secondary}
-                        />
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.app}>
+            <Modal transparent={false}
+                visible={this.props.isVisible}
+                onRequestClose={this.props.onCancel}
+                animationType="slide">
+                <SafeAreaView style={styles.container}>
+                    <Header title='Cursos' />
+                    <View style={styles.iconBar}>
+                        {/* <TouchableOpacity
+                            onPress={() => this.props.navigation.openDrawer()}>
+                            <Icon
+                                name={'bars'}
+                                size={20} color={commonStyles.colors.secondary}
+                            />
+                        </TouchableOpacity> */}
+                        <TouchableOpacity
+                            // onPress={() => this.props.navigation.goBack()} 
+                            onPress={() => this.props.onCancel()}
+                        >
+                            <Icon
+                                name="arrow-circle-left"
+                                size={20} color={commonStyles.colors.secondary} />
+                        </TouchableOpacity>
+                        <TouchableOpacity /* onPress={() => this.props.navigation.openDrawer()} */>
+                            <Icon
+                                name={'bell-o'}
+                                size={20} color={commonStyles.colors.secondary}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.app}>
 
-                    <Text style={styles.label}>Início</Text>
-                    {this.getDateStarPicker()}
-                    <Text style={styles.label}>Curso</Text>
-                    {this.getCourse()}
-                    <TouchableOpacity onPress={() => this.addUserCourse()}>
+                        <Text style={styles.label}>Início</Text>
+                        {this.getDateStarPicker()}
+                        <Text style={styles.label}>Curso</Text>
+                        {this.getCourse()}
+                        <TouchableOpacity onPress={() => this.save()}>
                         <View style={styles.buttons} >
                             <Text style={styles.button}>Salvar</Text>
                         </View>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
+                        </TouchableOpacity>
+                    </View>
+                </SafeAreaView>
+            </Modal >
         )
     }
 }

@@ -17,16 +17,17 @@ import { Avatar } from "react-native-elements"
 import { server, showError } from '../../common'
 import commonStyles from '../../commonStyles'
 import Header from '../../components/header/Header'
-import ProfileAddCourse from './ProfileAddCourse'
+// import ProfileAddCourse from './ProfileAddCourse'
+import UserCourse from '../userCourse/UserCourse'
 
 const initialState = {
     name: '',
     registration: '',
     email: '',
-    uri: 'https://cdn.pixabay.com/photo/2016/03/31/19/57/avatar-1295406_960_720.png',
+    uri: 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png',
     firstAccess: true,
-    showProfileEdit: false,
-    showProfileAddCourse: false,
+    // showProfileEdit: false,
+    showUserCourse: false,
     loading: false,
     courses: [],
     editName: false,
@@ -52,7 +53,7 @@ export default class Profile extends Component {
             if (profiles.length > 0) {
                 const profile = profiles.shift()
                 this.setState(profile)
-                this.setState({ uri: profile.avatar && profile.avatar })
+                // this.setState({ uri: profile.avatar && profile.avatar })
             }
         } catch (e) {
             showError(e)
@@ -70,37 +71,37 @@ export default class Profile extends Component {
         }
     }
 
-    updateProfile = (proflieEdited) => {
-        if (!proflieEdited.name || !proflieEdited.name.trim()) {
-            Alert.alert('Dados Inválidos', 'Nome não informado.')
-            return
-        }
-        if (!proflieEdited.email || !proflieEdited.email.trim() || !proflieEdited.email.includes('@')) {
-            Alert.alert('Dados Inválidos', 'Email inválido não informado.')
-            return
-        }
+    // updateProfile = (proflieEdited) => {
+    //     if (!proflieEdited.name || !proflieEdited.name.trim()) {
+    //         Alert.alert('Dados Inválidos', 'Nome não informado.')
+    //         return
+    //     }
+    //     if (!proflieEdited.email || !proflieEdited.email.trim() || !proflieEdited.email.includes('@')) {
+    //         Alert.alert('Dados Inválidos', 'Email inválido não informado.')
+    //         return
+    //     }
 
-        try {
-            axios.put(`${server}/profile/${this.state.id}`, {
-                name: proflieEdited.name,
-                registration: proflieEdited.registration,
-                email: proflieEdited.email
-            })
+    //     try {
+    //         axios.put(`${server}/profile/${this.state.id}`, {
+    //             name: proflieEdited.name,
+    //             registration: proflieEdited.registration,
+    //             email: proflieEdited.email
+    //         })
 
-            AsyncStorage.mergeItem('userData', JSON.stringify({
-                name: proflieEdited.name,
-                email: proflieEdited.email
-            }))
+    //         AsyncStorage.mergeItem('userData', JSON.stringify({
+    //             name: proflieEdited.name,
+    //             email: proflieEdited.email
+    //         }))
 
-            this.setState({ showProfileEdit: false, editName: false, editMail: false })
+    //         this.setState({ showProfileEdit: false, editName: false, editMail: false })
 
-            Alert.alert('Sucesso!', 'Seu perfil foi atualizado com sucesso.')
+    //         Alert.alert('Sucesso!', 'Seu perfil foi atualizado com sucesso.')
 
-        } catch (e) {
-            showError(e)
-        }
-        this.loadProfile()
-    }
+    //     } catch (e) {
+    //         showError(e)
+    //     }
+    //     this.loadProfile()
+    // }
 
     addCourse = async newCourse => {
         if (newCourse.courseId <= 0) {
@@ -110,19 +111,19 @@ export default class Profile extends Component {
 
         try {
             await axios.post(`${server}/users_courses`, {
+                start: newCourse.start,
                 courseId: newCourse.courseId,
-                usertypeId: newCourse.usertypeId
             })
-
-            this.setState({ showProfileAddCourse: false })
-
+    
+            this.setState({ showUserCourse: false })
             Alert.alert('Sucesso!', 'Curso iniciado com sucesso.')
-
+            this.loadCourses()
+            
         } catch (e) {
             showError(e)
         }
 
-        this.loadProfile()
+        this.loadCourses()
 
     }
 
@@ -134,9 +135,9 @@ export default class Profile extends Component {
                     onCancel={() => this.setState({ showProfileEdit: false })}
                     onSave={this.updateProfile}
                 /> */}
-                <ProfileAddCourse
-                    isVisible={this.state.showProfileAddCourse}
-                    onCancel={() => this.setState({ showProfileAddCourse: false })}
+                <UserCourse {...this.state}
+                    isVisible={this.state.showUserCourse}
+                    onCancel={() => this.setState({ showUserCourse: false })}
                     onSave={this.addCourse}
                 />
                 <Header title='Perfil' />
@@ -238,8 +239,9 @@ export default class Profile extends Component {
                             </View>
                         </TouchableOpacity> */}
                         <TouchableOpacity
-                            // onPress={() => this.setState({ showProfileAddCourse: true })}
-                            onPress={() => this.props.navigation.navigate('UserCourse')}>
+                            onPress={() => this.setState({ showUserCourse: true })}
+                            // onPress={() => this.props.navigation.navigate('UserCourse')}
+                            >
                             <View style={styles.buttons} >
                                 <View style={styles.button}>
                                     <Text style={styles.buttonText}>Iniciar curso</Text>

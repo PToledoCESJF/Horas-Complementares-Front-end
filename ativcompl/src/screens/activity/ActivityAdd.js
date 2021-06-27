@@ -10,6 +10,7 @@ import {
     StyleSheet,
     ScrollView,
     Modal,
+    ActivityIndicator,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import axios from 'axios'
@@ -27,78 +28,76 @@ const initialState = {
     start: new Date(),
     end: new Date(),
     workload: '',
-    categorySelected: '',
-    courseSelected: '',
+    categoryId: 1,
+    courseId: 1,
     categories: [],
     courses: [],
     showDateStartPicker: false,
     showDateEndPicker: false,
+    loading: false,
 }
 
 export default class ActivityAdd extends Component {
 
     state = { ...initialState }
-    // !this.props.route.params ? initialState
-    //     : {
-    //         id: this.props.route.params.id,
-    //         name: this.props.route.params.name,
-    //         start: this.props.route.params.start,
-    //         end: this.props.route.params.end,
-    //         workload: this.props.route.params.workload,
-    //         categorySelected: this.props.route.params.categoryId,
-    //         courseSelected: this.props.route.params.courseId
-    //     }
 
-    componentDidMount = async () => {
+    componentDidMount = () => {
+        this.setState({ ...initialState })
+        this.setState({ loading: true })
+        this.loadCategories()
+        this.loadCourses()
+        this.setState({ loading: false })
 
+
+    }
+
+    loadCategories = async () => {
         try {
             const resCategory = await axios.get(`${server}/categories`)
-            const resCourse = await axios.get(`${server}/users_courses`)
-            this.setState({ categories: resCategory.data, courses: resCourse.data })
+            this.setState({ categories: resCategory.data })
         } catch (e) {
             showError(e)
         }
+    }
 
-        // this.setState(this.props.route.params ? this.props.route.params : initialState )
+    loadCourses = async () => {
+        try {
+            const resCourse = await axios.get(`${server}/users_courses`)
+            this.setState({ courses: resCourse.data })
+        } catch (e) {
+            showError(e)
+        }
+    }
 
+    clearModal = () => {
+        this.setState({
+            id: '',
+            name: '',
+            start: new Date(),
+            end: new Date(),
+            workload: '',
+            categoryId: 1,
+            courseId: 1,
+            showDateStartPicker: false,
+            showDateEndPicker: false,
+            loading: false,
+        })
     }
 
     save = () => {
         const newActivity = {
             name: this.state.name,
             start: this.state.start,
+            end: this.state.end,
             workload: this.state.workload,
-
-            categoryId: this.state.categorySelected,
+            completed: false,
+            categoryId: this.state.categoryId,
+            courseId: this.state.courseId
         }
 
+        this.clearModal()
         this.props.onSave && this.props.onSave(newActivity)
-        this.setState({ ...initialState })
-    }
 
-    addActivity = async () => {
-        if (!this.state.name || !this.state.name.trim()) {
-            Alert.alert('Dados Inválidos', 'Nome da Atividade não informado.')
-            return
-        }
-
-        try {
-            await axios.post(`${server}/activities`, {
-                name: this.state.name,
-                start: this.state.start,
-                end: this.state.end,
-                workload: this.state.workload,
-                categoryId: this.state.categoryId,
-                completed: false,
-                categoryId: this.state.categorySelected,
-                courseId: this.state.courseSelected
-            })
-
-            this.props.navigation.goBack()
-
-        } catch (e) {
-            showError(e)
-        }
     }
 
     getDateEndPicker = () => {
@@ -154,9 +153,9 @@ export default class ActivityAdd extends Component {
             <View>
                 <Picker
                     // style={styles.picker}
-                    selectedValue={this.state.categorySelected}
+                    selectedValue={this.state.categoryId}
                     onValueChange={(itemValue) =>
-                        this.setState({ categorySelected: itemValue })
+                        this.setState({ categoryId: itemValue })
                     }>
                     {
                         this.state.categories.map(cat => {
@@ -173,9 +172,9 @@ export default class ActivityAdd extends Component {
             <View>
                 <Picker
                     style={styles.picker}
-                    selectedValue={this.state.courseSelected}
+                    selectedValue={this.state.courseId}
                     onValueChange={(itemValue) =>
-                        this.setState({ courseSelected: itemValue })
+                        this.setState({ courseId: itemValue })
                     }>
                     {
                         this.state.courses.map(course => {
@@ -193,48 +192,57 @@ export default class ActivityAdd extends Component {
                 visible={this.props.isVisible}
                 onRequestClose={this.props.onCancel}
                 animationType="slide">
-            <SafeAreaView style={styles.container}>
-                <ScrollView>
-                    <Header />
-                    <View style={styles.iconBar}>
-                        <TouchableOpacity /* style={styles.addButton} */
-                            onPress={this.props.onCancel} >
-                            <Icon
-                                name="arrow-left"
-                                size={20} color={commonStyles.colors.secondary} />
-                        </TouchableOpacity>
-                        <TouchableOpacity /* onPress={() => this.props.navigation.openDrawer()} */>
-                            <Icon
-                                name={'bell-o'}
-                                size={20} color={commonStyles.colors.secondary}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.app}>
-                        <Text style={styles.label}>Nome</Text>
-                        <TextInput style={styles.input}
-                            onChangeText={name => this.setState({ name })}
-                            value={this.state.name} />
-                        <Text style={styles.label}>Início</Text>
-                        {this.getDateStarPicker()}
-                        <Text style={styles.label}>Término</Text>
-                        {this.getDateEndPicker()}
-                        <Text style={styles.label}>Carga horária</Text>
-                        <TextInput style={styles.input}
-                            onChangeText={workload => this.setState({ workload })}
-                            value={this.state.workload} />
-                        <Text style={styles.label}>Catigoria</Text>
-                        {this.getCategory()}
-                        <Text style={styles.label}>Curso</Text>
-                        {this.getCourse()}
-                        <TouchableOpacity onPress={() => this.addActivity()}>
-                            <View style={styles.buttons} >
-                                <Text style={styles.button}>Salvar</Text>
+                {this.state.loading
+                    && <ActivityIndicator color={commonStyles.colors.primary} size={50} style={{ marginTop: 150 }} />
+                    ||
+                    <SafeAreaView style={styles.container}>
+                        <ScrollView>
+                            <Header />
+                            <View style={styles.iconBar}>
+                                <TouchableOpacity /* style={styles.addButton} */
+                                    onPress={this.props.onCancel} >
+                                    <Icon
+                                        name="arrow-left"
+                                        size={20} color={commonStyles.colors.secondary} />
+                                </TouchableOpacity>
+                                <TouchableOpacity /* onPress={() => this.props.navigation.openDrawer()} */>
+                                    <Icon
+                                        name={'bell-o'}
+                                        size={20} color={commonStyles.colors.secondary}
+                                    />
+                                </TouchableOpacity>
                             </View>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView>
-            </SafeAreaView>
+                            <View style={styles.app}>
+                                <Text style={styles.label}>Nome</Text>
+                                <TextInput style={styles.input}
+                                    autoFocus
+                                    onChangeText={name => this.setState({ name })}
+                                    value={this.state.name} />
+                                <Text style={styles.label}>Início</Text>
+                                {this.getDateStarPicker()}
+                                <Text style={styles.label}>Término</Text>
+                                {this.getDateEndPicker()}
+                                <Text style={styles.label}>Carga horária</Text>
+                                <TextInput style={styles.input}
+                                    keyboardType='decimal-pad'
+                                    onChangeText={workload => this.setState({ workload })}
+                                    value={this.state.workload} />
+                                <Text style={styles.label}>Catigoria</Text>
+                                {this.getCategory()}
+                                <Text style={styles.label}>Curso</Text>
+                                {this.getCourse()}
+                                <TouchableOpacity
+                                    // onPress={() => this.addActivity()}
+                                    onPress={() => this.save()}
+                                >
+                                    <View style={styles.buttons} >
+                                        <Text style={styles.button}>Salvar</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        </ScrollView>
+                    </SafeAreaView>
+                }
             </Modal>
         )
     }
@@ -243,7 +251,6 @@ export default class ActivityAdd extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // marginTop: 60
     },
     background: {
         flex: 2

@@ -6,15 +6,15 @@ import {
     FlatList,
     TouchableOpacity,
     Platform,
+    Alert,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
-import moment from 'moment'
-import 'moment/locale/pt-br'
 
 import { server, showError } from '../../common'
 import Activity from '../../components/activity/Activity'
+import ActivityHoursCompleted from '../../components/activity/ActivityHoursCompleted'
 import Header from '../../components/header/Header'
 import commonStyles from '../../commonStyles'
 import ActivityAdd from './ActivityAdd'
@@ -23,7 +23,8 @@ const initialState = {
     showActivityAdd: false,
     showDoneActivity: true,
     visibleActivities: [],
-    activities: []
+    activities: [],
+    workloadCompleted: '',
 }
 export default class App extends Component {
     state = {
@@ -36,14 +37,24 @@ export default class App extends Component {
         this.setState({
             showDoneActivity: savedState.showDoneActivity
         }, this.filterActivities)
+        this.getWorkloadCompleted()
         this.loadActivities()
     }
 
     // TODO >> converter essa funcionalidade para outros fins
+    // loadActivities = async () => {
+    //     try {
+    //         const maxDate = moment().format('YYYY-MM-10 23:59:59')
+    //         const res = await axios.get(`${server}/activities?start=${maxDate}`)
+    //         this.setState({ activities: res.data }, this.filterActivities)
+    //     } catch (e) {
+    //         showError(e)
+    //     }
+    // }
+
     loadActivities = async () => {
         try {
-            const maxDate = moment().format('YYYY-MM-10 23:59:59')
-            const res = await axios.get(`${server}/activities?start=${maxDate}`)
+            const res = await axios.get(`${server}/activities`)
             this.setState({ activities: res.data }, this.filterActivities)
         } catch (e) {
             showError(e)
@@ -68,7 +79,7 @@ export default class App extends Component {
         }))
     }
 
-    toggleActivity = async activityId => {
+    toggleActivity = async (activityId) => {
         try {
             await axios.put(`${server}/activities/${activityId}/toggle`)
             this.loadActivities()
@@ -78,10 +89,98 @@ export default class App extends Component {
         }
     }
 
-    deleteActivity = async activityId => {
+    deleteActivity = async (activityId) => {
         try {
             await axios.delete(`${server}/activities/${activityId}`)
             this.loadActivities()
+        } catch (e) {
+            showError(e)
+        }
+    }
+
+    validationActivity = async (newActivity) => {
+
+        if (!newActivity.name || !newActivity.name.trim()) {
+            Alert.alert('Dados Inválidos', 'Nome da Atividade não informado.')
+            return
+        }
+        if (!newActivity.courseId) {
+            Alert.alert('Dados Inválidos', 'Curso não informado.')
+            return
+        }
+        if (!newActivity.categoryId) {
+            Alert.alert('Dados Inválidos', 'Categoria não informada.')
+            return
+        }
+
+        if (newActivity.workload <= 0) {
+            Alert.alert('Dados Inválidos', 'Carga horária não informada.')
+            return
+        } else {
+
+            try {
+
+                const resCourses = await axios.get(`${server}/courses/${newActivity.courseId}`)
+                const courseSelected = resCourses.data
+
+                if (newActivity.workload > courseSelected.limit) {
+                    Alert.alert(
+                        'Atenção',
+                        `O limite de horas para uma atividade é de ${courseSelected.limit} horas.\nNão serão considerados valores acima deste limite\n\nDeseja registrar essa atividade?.`, [
+                        {
+                            text: 'Sim',
+                            onPress: () => {
+                                newActivity.workload = courseSelected.limit
+                                this.addActivity(newActivity)
+                            }
+                        }, {
+                            text: 'Não',
+                            onPress: () => {
+                                this.setState({ showActivityAdd: false })
+                                this.loadActivities()
+                                return
+                            }
+                        }
+                    ])
+
+                } else {
+                    this.addActivity(newActivity)
+                }
+
+            } catch (e) {
+                showError(e)
+            }
+        }
+    }
+
+    addActivity = async (newActivity) => {
+
+        try {
+            await axios.post(`${server}/activities`, {
+                name: newActivity.name,
+                start: newActivity.start,
+                end: newActivity.end,
+                workload: newActivity.workload,
+                completed: newActivity.completed,
+                categoryId: newActivity.categoryId,
+                courseId: newActivity.courseId
+            })
+
+            this.setState({ showActivityAdd: false })
+            this.loadActivities()
+            Alert.alert('Sucesso!', 'Atividade registrada com sucesso.')
+
+        } catch (e) {
+            showError(e)
+        }
+    }
+
+    getWorkloadCompleted = async () => {
+        try {
+            const res = await axios.get(`${server}/activitiesworkload`)
+            const act = res.data
+            this.setState({ workloadCompleted: act.reduce((a, c) => a + c) })
+            
         } catch (e) {
             showError(e)
         }
@@ -93,12 +192,12 @@ export default class App extends Component {
                 <ActivityAdd {...this.state}
                     isVisible={this.state.showActivityAdd}
                     onCancel={() => this.setState({ showActivityAdd: false })}
-                    // onSave={this.updateProfile}
+                    onSave={this.validationActivity}
                 />
-                <Header title='Atividades' />       
+                <Header title='Atividades' />
                 <View style={styles.iconBar}>
                     <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}>
-                         {/* onPress={() => this.props.navigation.navigate('Menu')}  */}
+                        {/* onPress={() => this.props.navigation.navigate('Menu')}  */}
                         <Icon
                             name={'bars'}
                             size={20} color={commonStyles.colors.secondary}
@@ -118,6 +217,7 @@ export default class App extends Component {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.app}>
+                    <ActivityHoursCompleted {...this.state}/>
                     <FlatList
                         data={this.state.visibleActivities}
                         keyExtractor={item => `${item.id}`}
@@ -154,7 +254,8 @@ const styles = StyleSheet.create({
     },
     app: {
         flex: 8,
-        marginTop: 20
+        marginTop: 20,
+        paddingBottom: 60
     },
     iconBar: {
         backgroundColor: commonStyles.colors.primary,

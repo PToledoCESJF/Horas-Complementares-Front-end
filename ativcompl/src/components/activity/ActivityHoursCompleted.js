@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
     View,
     Text,
@@ -10,64 +10,18 @@ import Swipeable from 'react-native-gesture-handler/Swipeable'
 import Icon from 'react-native-vector-icons/FontAwesome'
 
 import commonStyles from '../../commonStyles'
-    
-export default props => {
+import { server, showError } from '../../common'
+import axios from 'axios'
 
-    const getRightContent = () => {
-        return (
-            <View style={styles.right}>
-                <Text style={styles.closeActivity}>Excluir</Text>
-                <Icon name="trash" size={25} color="#FFF" style={styles.closeIcon} />
-            </View>
-        )
-    }
-
-    const getLeftContent = () => {
-        return (
-            <View style={styles.left}>
-                <Icon name="trash" size={25} color="#FFF" style={styles.closeIcon} />
-                <Text style={styles.closeActivity}>Excluir</Text>
-            </View>
-        )
-    }
-
-
-    function getCheckView(completed) {
-        if (completed) {
-            return (
-                <View style={styles.done}>
-                    <Icon name='check' size={18} color='#FFF'></Icon>
-                </View>
-            )
-        } else {
-            return (
-                <View style={styles.pending}></View>
-            )
-        }
-    }
-
+export default ({ workload, workloadCompleted }) => {
+    // console.warn(workloadCompleted)
     return (
-        <Swipeable
-            renderRightActions={getRightContent}
-            renderLeftActions={getLeftContent}
-            onSwipeableLeftOpen={() => props.onDelete && props.onDelete(props.id)}>
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <Text style={styles.activ}>{props.name}</Text>
-                </View>
-                <View style={styles.body}>
-                    <TouchableWithoutFeedback onPress={() => props.onToggleActivity(props.id)}>
-                        <View style={styles.checkContainer}>
-                            {getCheckView(props.completed)}
-                            <Text style={styles.textBody}>Concluído</Text>
-                        </View>
-                    </TouchableWithoutFeedback>
-                    <View>
-                        <Text style={styles.textBody}>Carga horária: {props.workload + ""} h</Text>
-                    </View>
-                </View>
+        <View style={styles.container}>
+            <View style={styles.body}>
+                {/* <Text style={styles.textBody}>Carga horária exigida: {workload + ""} horas</Text> */}
+                <Text style={styles.textBody}>Carga horária completa: {workloadCompleted.sum + ""} horas</Text>
             </View>
-        </Swipeable>
+        </View>
     )
 }
 
