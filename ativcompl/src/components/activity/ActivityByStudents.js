@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
     View,
     Text,
@@ -7,15 +7,17 @@ import {
 
 import commonStyles from '../../commonStyles'
 
-export default ({ workload, workloadCompleted }) => {
-
-    const [completed] = useState(workloadCompleted.sum ? workloadCompleted.sum : 0)
+export default props => {
 
     return (
         <View style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.activ}>{props.name}</Text>
+            </View>
             <View style={styles.body}>
-                {/* <Text style={styles.textBody}>Carga horária exigida: {workload + ""} horas</Text> */}
-                <Text style={styles.textBody}>Carga horária completa: {completed + ""} horas</Text>
+                <View>
+                    <Text style={styles.textBody}>Carga horária: {props.workload + ""} h</Text>
+                </View>
             </View>
         </View>
     )
@@ -23,13 +25,11 @@ export default ({ workload, workloadCompleted }) => {
 
 const styles = StyleSheet.create({
     container: {
-        width: '90%',
+        width: '100%',
         alignSelf: 'center',
         borderColor: '#AAA',
-        borderWidth: 3,
+        borderWidth: 1,
         paddingVertical: 10,
-        marginVertical: 5,
-        borderRadius: 20,
         backgroundColor: commonStyles.colors.secondary
     },
     checkContainer: {
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     },
     body: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         marginHorizontal: 15
     },
     pending: {

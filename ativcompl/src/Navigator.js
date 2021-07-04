@@ -8,6 +8,9 @@ import ActivityList from './screens/activity/ActivityList'
 import Address from './screens/address/Address'
 import Profile from './screens/profile/Profile'
 import ProfileCS from './screens/profile/ProfileCS'
+import StudentsList from './screens/valuations/StudentsList'
+
+import CertificateView from './screens/activity/CertificateView'
 
 import Menu from './screens/menu/Menu'
 import commonStyles from './commonStyles'
@@ -26,6 +29,39 @@ const menuConfig = {
             fontWeight: 'bold'
         }
     }
+}
+
+const menuConfigCS = {
+    initialRouteName: 'StudentsList',
+    contentComponent: Menu,
+    contentOptions: {
+        labelStyle: {
+            fontFamily: commonStyles.fontFamily,
+            fontWeight: 'normal',
+            fontSize: 20
+        },
+        activiteLabelStyle: {
+            color: commonStyles.colors.primary,
+            fontWeight: 'bold'
+        }
+    }
+}
+
+const menuConfigFirsAccess = {
+    initialRouteName: 'Profile',
+    contentComponent: Menu,
+    contentOptions: {
+        labelStyle: {
+            fontFamily: commonStyles.fontFamily,
+            fontWeight: 'normal',
+            fontSize: 20
+        },
+        activiteLabelStyle: {
+            color: commonStyles.colors.primary,
+            fontWeight: 'bold'
+        }
+    }
+
 }
 
 const menuRoutes = {
@@ -50,9 +86,18 @@ const menuRoutes = {
             title: 'Endereço'
         }
     },
+    Certificate: {
+        name: 'Certificate',
+        screen: props => <CertificateView title='Certificado' {...props} />,
+        navigationOptions: {
+            title: 'Certificado'
+        }
+    },
 }
 
 const menuNavigator = createDrawerNavigator(menuRoutes, menuConfig)
+
+const menuNavigatorFA = createDrawerNavigator(menuRoutes, menuConfigFirsAccess)
 
 
 const menuRoutesCS = {
@@ -60,26 +105,19 @@ const menuRoutesCS = {
         name: 'Profile',
         screen: props => <ProfileCS title='Perfil' {...props} />,
         navigationOptions: {
-            title: 'Cadastro'
+            title: 'Perfil'
         }
     },
-    Activity: {
-        name: 'Activity',
-        screen: props => <ActivityList title='Atividades' {...props} />,
+    StudentsList: {
+        name: 'StudentsList',
+        screen: props => <StudentsList title='Avaliações' {...props} />,
         navigationOptions: {
-            title: 'Atividades do cara'
-        }
-    },
-    Address: {
-        name: 'Address',
-        screen: props => <Address title='Endereço' {...props} />,
-        navigationOptions: {
-            title: 'Endereço do broww'
+            title: 'Avaliações'
         }
     },
 }
 
-const menuNavigatorCS = createDrawerNavigator(menuRoutesCS, menuConfig)
+const menuNavigatorCS = createDrawerNavigator(menuRoutesCS, menuConfigCS)
 
 const mainRoutes = {
     Loading: {
@@ -93,6 +131,10 @@ const mainRoutes = {
     Home: {
         name: 'Home',
         screen: menuNavigator
+    },
+    HomeFA: {
+        name: 'HomeFA',
+        screen: menuNavigatorFA
     },
     HomeCS: {
         name: 'HomeCS',

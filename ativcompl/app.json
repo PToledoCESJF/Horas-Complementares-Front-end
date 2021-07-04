@@ -1,4 +1,13 @@
 {
   "name": "ativcompl",
-  "displayName": "ativcompl"
+  "displayName": "Horas Complementares",
+  "version": "1.0.0",
+  "orientation": "portrait",
+  "icon": "./assets/imgs/Logo.png",
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/imgs/Logo_white.png",
+      "backgroundColor": "#FFFFFF"
+    }
+  }
 }

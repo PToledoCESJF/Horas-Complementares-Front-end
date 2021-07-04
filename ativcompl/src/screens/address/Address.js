@@ -59,7 +59,7 @@ export default class Address extends Component {
             return
         }
 
-        if(this.state.newAddress && this.state.id === 0){
+        if (this.state.newAddress && this.state.id === 0) {
             try {
                 await axios.post(`${server}/addresses`, {
                     street: this.state.street,
@@ -80,33 +80,24 @@ export default class Address extends Component {
                     district: this.state.district,
                     city: this.state.city
                 })
-                
+
                 Alert.alert('Sucesso!', 'Endereço salvo com sucesso.')
             } catch (e) {
                 showError(e)
             }
-        }   
-        
-        this.updatePage()     
+        }
+
+        this.updatePage()
     }
 
     render() {
         return (
             <SafeAreaView style={styles.container}>
-                <ImageBackground source={topPage}
-                    style={styles.background}>
-                    <View style={styles.titleBar}>
-                        <Text style={styles.title}>{this.props.title}</Text>
-                    </View>
-                </ImageBackground>
-                <View style={styles.iconBar}>
-                    <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}>
-                        <Icon
-                            name={'bars'}
-                            size={20} color={commonStyles.colors.secondary}
-                        />
-                    </TouchableOpacity>
-                </View>
+                <Header
+                    title={this.props.title}
+                    bars={this.props.navigation.openDrawer}
+                    toggleFilter={this.toggleFilter}
+                />
                 <View style={styles.app}>
                     {this.state.newAddress &&
                         <TextInput style={styles.input}

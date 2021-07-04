@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
     View,
     Text,
@@ -7,15 +7,38 @@ import {
 
 import commonStyles from '../../commonStyles'
 
-export default ({ workload, workloadCompleted }) => {
+export default props => {
 
-    const [completed] = useState(workloadCompleted.sum ? workloadCompleted.sum : 0)
+    function getCheckView(completed) {
+        if (completed) {
+            return (
+                <View style={styles.done}>
+                    <Icon name='check' size={18} color='#FFF'></Icon>
+                </View>
+            )
+        } else {
+            return (
+                <View style={styles.pending}></View>
+            )
+        }
+    }
 
     return (
+
         <View style={styles.container}>
+            <View style={styles.header}>
+                <Text style={styles.activ}>{props.name}</Text>
+            </View>
             <View style={styles.body}>
-                {/* <Text style={styles.textBody}>Carga horária exigida: {workload + ""} horas</Text> */}
-                <Text style={styles.textBody}>Carga horária completa: {completed + ""} horas</Text>
+                <TouchableWithoutFeedback onPress={() => props.onToggleActivity(props.id)}>
+                    <View style={styles.checkContainer}>
+                        {getCheckView(props.completed)}
+                        <Text style={styles.textBody}>Concluído</Text>
+                    </View>
+                </TouchableWithoutFeedback>
+                <View>
+                    <Text style={styles.textBody}>Carga horária: {props.workload + ""} h</Text>
+                </View>
             </View>
         </View>
     )

@@ -33,8 +33,6 @@ export default props => {
             )
         }
     }
-
-    console.warn(coursesSelected)
     return (
         <View style={styles.container}>
             <TouchableWithoutFeedback 

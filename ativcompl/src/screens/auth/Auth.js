@@ -5,6 +5,7 @@ import {
     StyleSheet,
     View,
     TouchableOpacity,
+    Alert,
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
@@ -68,7 +69,12 @@ export default class Auth extends Component {
             axios.defaults.headers.common['Authorization'] = `bearer ${res.data.token}`
             const login = res.data
             if(login.usertypeId == 1){
-                this.props.navigation.navigate('Home', res.data)
+                if(login.userCourse != null){
+                    this.props.navigation.navigate('Home', res.data)
+                } else {
+                    this.props.navigation.navigate('HomeFA', res.data)
+                    Alert.alert('Atenção', 'Você precisa iniciar um curso para registrar atividades')
+                }
             } else {
                 this.props.navigation.navigate('HomeCS', res.data)
             }

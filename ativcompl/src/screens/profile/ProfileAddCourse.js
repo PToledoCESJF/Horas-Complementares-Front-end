@@ -95,7 +95,6 @@ export default class ProfileAddCourse extends Component {
                     ||
                     <View style={styles.container}>
                         <Text style={styles.header}>Cursos</Text>
-
                         <Text style={styles.label}>Cursos</Text>
                         {this.getCourses()}
                         <Text style={styles.divider} />

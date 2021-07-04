@@ -4,7 +4,6 @@ import {
     View,
     SafeAreaView,
     Text,
-    Alert,
     TouchableOpacity,
     TextInput,
     StyleSheet,
@@ -12,11 +11,11 @@ import {
     Modal,
     ActivityIndicator,
 } from 'react-native'
-import Icon from 'react-native-vector-icons/FontAwesome'
 import axios from 'axios'
 import { Picker } from '@react-native-picker/picker'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import moment from 'moment'
+import 'moment/locale/pt-br'
 
 import commonStyles from '../../commonStyles'
 import { server, showError } from '../../common'
@@ -114,7 +113,7 @@ export default class ActivityAdd extends Component {
                 <View>
                     <TouchableOpacity onPress={() => this.setState({ showDateEndPicker: true })}>
                         <Text style={styles.date}>
-                            {`Término: ${dateString}`}
+                            {dateString}
                         </Text>
                     </TouchableOpacity>
                     {this.state.showDateEndPicker && datePiker}
@@ -138,7 +137,7 @@ export default class ActivityAdd extends Component {
                 <View>
                     <TouchableOpacity onPress={() => this.setState({ showDateStartPicker: true })}>
                         <Text style={styles.date}>
-                            {`Início: ${dateString}`}
+                            {dateString}
                         </Text>
                     </TouchableOpacity>
                     {this.state.showDateStartPicker && datePiker}
@@ -196,38 +195,44 @@ export default class ActivityAdd extends Component {
                     && <ActivityIndicator color={commonStyles.colors.primary} size={50} style={{ marginTop: 150 }} />
                     ||
                     <SafeAreaView style={styles.container}>
+                        <Header
+                            title='Atividades'
+                            onCancel={this.props.onCancel}
+                        />
                         <ScrollView>
-                            <Header />
-                            <View style={styles.iconBar}>
-                                <TouchableOpacity /* style={styles.addButton} */
-                                    onPress={this.props.onCancel} >
-                                    <Icon
-                                        name="arrow-left"
-                                        size={20} color={commonStyles.colors.secondary} />
-                                </TouchableOpacity>
-                                <TouchableOpacity /* onPress={() => this.props.navigation.openDrawer()} */>
-                                    <Icon
-                                        name={'bell-o'}
-                                        size={20} color={commonStyles.colors.secondary}
-                                    />
-                                </TouchableOpacity>
-                            </View>
                             <View style={styles.app}>
-                                <Text style={styles.label}>Nome</Text>
+                                <Text style={styles.label}>Atividade</Text>
                                 <TextInput style={styles.input}
                                     autoFocus
                                     onChangeText={name => this.setState({ name })}
-                                    value={this.state.name} />
-                                <Text style={styles.label}>Início</Text>
-                                {this.getDateStarPicker()}
-                                <Text style={styles.label}>Término</Text>
-                                {this.getDateEndPicker()}
+                                    value={this.state.name}
+                                />
+                                <View style={styles.dateGroup}>
+                                    <View style={styles.dateHour}>
+                                        <Text style={styles.label}>Início</Text>
+                                        {this.getDateStarPicker()}
+                                    </View>
+
+                                    <View style={styles.dateHour}>
+                                        <Text style={styles.label}>Término</Text>
+                                        {this.getDateEndPicker()}
+                                    </View>
+                                </View>
                                 <Text style={styles.label}>Carga horária</Text>
                                 <TextInput style={styles.input}
                                     keyboardType='decimal-pad'
                                     onChangeText={workload => this.setState({ workload })}
-                                    value={this.state.workload} />
-                                <Text style={styles.label}>Catigoria</Text>
+                                    value={this.state.workload}
+                                />
+                                <Text style={styles.label}>Url do Certificado</Text>
+                                <TextInput
+                                    style={styles.input}
+                                    autoCapitalize={'none'}
+                                    keyboardType='url'
+                                    onChangeText={certificate => this.setState({ certificate })}
+                                    value={this.state.certificate}
+                                />
+                                <Text style={styles.label}>Categoria</Text>
                                 {this.getCategory()}
                                 <Text style={styles.label}>Curso</Text>
                                 {this.getCourse()}
@@ -352,13 +357,24 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
+    dateGroup: {
+        flexDirection: 'row',
+        // justifyContent: 'flex-start',
+        // marginTop: 5
+    },
+    dateHour: {
+        width: '50%',
+        justifyContent: 'space-around',
+        marginTop: 10,
+        marginLeft: 15
+    },
     date: {
         fontFamily: commonStyles.fontFamily,
-        width: '90%',
-        paddingVertical: 10,
+        width: '75%',
+        paddingVertical: 5,
         fontSize: 14,
         marginBottom: 20,
-        marginLeft: 15,
+        // marginLeft: 15,
         borderBottomWidth: 1,
         borderColor: '#A9A9A9',
     },
@@ -377,6 +393,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-
 
 })

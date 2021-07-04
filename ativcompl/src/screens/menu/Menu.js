@@ -1,7 +1,6 @@
 import React from 'react'
 import { Platform, ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { DrawerItems } from 'react-navigation-drawer'
-import { Gravatar } from 'react-native-gravatar'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
@@ -20,12 +19,6 @@ export default props => {
         <ScrollView>
             <Text style={styles.title}>Atividades Complementares</Text>
             <View style={styles.header}>
-                <Gravatar style={styles.avatar}
-                    options={{
-                        registration: props.navigation.getParam('registration'),
-                        secure: true
-                    }}
-                />
                 <View style={styles.userInfo}>
                     <Text style={styles.name}>
                         {props.navigation.getParam('name')}

@@ -18,15 +18,18 @@ import ActivityHoursCompleted from '../../components/activity/ActivityHoursCompl
 import Header from '../../components/header/Header'
 import commonStyles from '../../commonStyles'
 import ActivityAdd from './ActivityAdd'
+import CertificateAdd from './CertificateAdd'
 
 const initialState = {
     showActivityAdd: false,
+    showCertificateAdd: false,
+    item: '',
     showDoneActivity: true,
     visibleActivities: [],
     activities: [],
     workloadCompleted: '',
 }
-export default class App extends Component {
+export default class ActivityList extends Component {
     state = {
         ...initialState
     }
@@ -40,6 +43,8 @@ export default class App extends Component {
         this.getWorkloadCompleted()
         this.loadActivities()
     }
+
+// ude.my/UC-27e8929b-a26f-4464-af05-f714237d15e5
 
     // TODO >> converter essa funcionalidade para outros fins
     // loadActivities = async () => {
@@ -180,6 +185,30 @@ export default class App extends Component {
             const res = await axios.get(`${server}/activitiesworkload`)
             const act = res.data
             this.setState({ workloadCompleted: act.reduce((a, c) => a + c) })
+
+        } catch (e) {
+            showError(e)
+        }
+    }
+
+    certificateActivity = async (activity) => {
+        if(!activity.id){
+            Alert.alert('Dados Inválidos', 'Id da Atividade.')
+            return
+        }
+        if(!activity.certificate || !activity.certificate.trim()){
+            Alert.alert('Dados Inválidos', 'Certificado é um campo obrigatório.')
+            return
+        }
+        try {
+            await axios.put(`${server}/activities/${activity.id}/certificate`, {
+                certificate: activity.certificate
+            })
+
+            this.setState({ showCertificateAdd: false })
+            this.loadActivities()
+            Alert.alert('Sucesso!', 'Certificado registrado com sucesso.')
+            
             
         } catch (e) {
             showError(e)
@@ -194,45 +223,32 @@ export default class App extends Component {
                     onCancel={() => this.setState({ showActivityAdd: false })}
                     onSave={this.validationActivity}
                 />
-                <Header title='Atividades' />
-                <View style={styles.iconBar}>
-                    <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}>
-                        {/* onPress={() => this.props.navigation.navigate('Menu')}  */}
-                        <Icon
-                            name={'bars'}
-                            size={20} color={commonStyles.colors.secondary}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={this.toggleFilter}>
-                        <Icon
-                            name={this.state.showDoneActivity ? 'eye' : 'eye-slash'}
-                            size={20} color={commonStyles.colors.secondary}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity /* onPress={this.toggleFilter} */>
-                        <Icon
-                            name={'bell-o'}
-                            size={20} color={commonStyles.colors.secondary}
-                        />
-                    </TouchableOpacity>
-                </View>
+                <CertificateAdd {...this.state.item}
+                    isVisible={this.state.showCertificateAdd}
+                    onCancel={() => this.setState({ showCertificateAdd: false })}
+                    onSave={this.certificateActivity}
+                />
+                <Header 
+                    title='Atividades'
+                    bars={this.props.navigation.openDrawer}
+                    toggleFilter={this.toggleFilter}
+                />
                 <View style={styles.app}>
-                    <ActivityHoursCompleted {...this.state}/>
+                    <ActivityHoursCompleted {...this.state} />
                     <FlatList
                         data={this.state.visibleActivities}
                         keyExtractor={item => `${item.id}`}
                         renderItem={({ item }) =>
-                            <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('ActivityAdd', item)}
-
-                            >
-                                <Activity {...item} onToggleActivity={this.toggleActivity} onDelete={this.deleteActivity} />
-                            </TouchableOpacity>
+                                <TouchableOpacity
+                                    activeOpacity={0.5}
+                                    onPress={() => this.setState({ item: item, showCertificateAdd: true})}
+                                >
+                                    <Activity {...item} onToggleActivity={this.toggleActivity} onDelete={this.deleteActivity} />
+                                </TouchableOpacity>
                         } />
                 </View>
                 <TouchableOpacity style={styles.addButton}
                     activeOpacity={0.5}
-                    // onPress={() => this.props.navigation.navigate('ActivityAdd')}
                     onPress={() => this.setState({ showActivityAdd: true })}
                 >
                     <Icon name="plus" size={20} color="#FFF" />

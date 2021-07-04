@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, ActivityIndicator, StyleSheet, Alert } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 
 import commonStyles from '../../commonStyles';
-
 export default class Loading extends Component {
 
     componentDidMount = async () => {
@@ -17,11 +16,18 @@ export default class Loading extends Component {
             // userData está inválido
         }
 
+        this.setState({ userData })
+
         if (userData && userData.token) {
             axios.defaults.headers.common['Authorization'] = `bearer ${userData.token}`
 
             if (userData.usertypeId == 1) {
-                this.props.navigation.navigate('Home', userData)
+                if(userData.userCourse != null){
+                    this.props.navigation.navigate('Home', userData)
+                } else {
+                    this.props.navigation.navigate('HomeFA', userData)
+                    Alert.alert('Atenção', 'Você precisa iniciar um curso para registrar atividades')
+                }
             } else {
                 this.props.navigation.navigate('HomeCS', userData)
             }

@@ -28,11 +28,6 @@ const initialState = {
 export default class UserCourse extends Component {
 
     state = { ...initialState }
-    // !this.props.route.params ? initialState
-    //     : {
-    //         start: this.props.route.params.start,
-    //         courseId: this.props.route.params.courseId,
-    //     }
 
     componentDidMount = async () => {
         try {
@@ -42,28 +37,6 @@ export default class UserCourse extends Component {
             showError(e)
         }
     }
-
-    // addUserCourse = async () => {
-    //     if (this.state.courseId <= 0) {
-    //         Alert.alert('Dados Inválidos', 'Curso não informado.')
-    //         return
-    //     }
-
-    //     try {
-    //         await axios.post(`${server}/users_courses`, {
-    //             start: this.state.start,
-    //             courseId: this.state.courseId,
-    //         })
-
-    //         Alert.alert('Sucesso!', 'Curso cadastrado com sucesso.')
-
-    //         this.props.onCancel && this.props.onCancel()
-
-    //     } catch (e) {
-    //         Alert.alert('Erro!', 'Curso não cadastrado.')
-    //         showError(e)
-    //     }
-    // }
 
     save = () => {
         const newCourse = {
@@ -125,40 +98,19 @@ export default class UserCourse extends Component {
                 onRequestClose={this.props.onCancel}
                 animationType="slide">
                 <SafeAreaView style={styles.container}>
-                    <Header title='Cursos' />
-                    <View style={styles.iconBar}>
-                        {/* <TouchableOpacity
-                            onPress={() => this.props.navigation.openDrawer()}>
-                            <Icon
-                                name={'bars'}
-                                size={20} color={commonStyles.colors.secondary}
-                            />
-                        </TouchableOpacity> */}
-                        <TouchableOpacity
-                            // onPress={() => this.props.navigation.goBack()} 
-                            onPress={() => this.props.onCancel()}
-                        >
-                            <Icon
-                                name="arrow-circle-left"
-                                size={20} color={commonStyles.colors.secondary} />
-                        </TouchableOpacity>
-                        <TouchableOpacity /* onPress={() => this.props.navigation.openDrawer()} */>
-                            <Icon
-                                name={'bell-o'}
-                                size={20} color={commonStyles.colors.secondary}
-                            />
-                        </TouchableOpacity>
-                    </View>
+                    <Header
+                        title='Cursos'
+                        onCancel={this.props.onCancel}
+                    />
                     <View style={styles.app}>
-
                         <Text style={styles.label}>Início</Text>
                         {this.getDateStarPicker()}
                         <Text style={styles.label}>Curso</Text>
                         {this.getCourse()}
                         <TouchableOpacity onPress={() => this.save()}>
-                        <View style={styles.buttons} >
-                            <Text style={styles.button}>Salvar</Text>
-                        </View>
+                            <View style={styles.buttons} >
+                                <Text style={styles.button}>Salvar</Text>
+                            </View>
                         </TouchableOpacity>
                     </View>
                 </SafeAreaView>
