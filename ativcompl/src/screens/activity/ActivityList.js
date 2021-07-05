@@ -14,7 +14,6 @@ import axios from 'axios'
 
 import { server, showError } from '../../common'
 import Activity from '../../components/activity/Activity'
-import ActivityHoursCompleted from '../../components/activity/ActivityHoursCompleted'
 import Header from '../../components/header/Header'
 import commonStyles from '../../commonStyles'
 import ActivityAdd from './ActivityAdd'
@@ -234,7 +233,6 @@ export default class ActivityList extends Component {
                     toggleFilter={this.toggleFilter}
                 />
                 <View style={styles.app}>
-                    <ActivityHoursCompleted {...this.state} />
                     <FlatList
                         data={this.state.visibleActivities}
                         keyExtractor={item => `${item.id}`}

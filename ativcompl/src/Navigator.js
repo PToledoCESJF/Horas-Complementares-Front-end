@@ -9,6 +9,7 @@ import Address from './screens/address/Address'
 import Profile from './screens/profile/Profile'
 import ProfileCS from './screens/profile/ProfileCS'
 import StudentsList from './screens/valuations/StudentsList'
+import Evolution from './screens/evolution/Evolution'
 
 import CertificateView from './screens/activity/CertificateView'
 
@@ -91,6 +92,13 @@ const menuRoutes = {
         screen: props => <CertificateView title='Certificado' {...props} />,
         navigationOptions: {
             title: 'Certificado'
+        }
+    },
+    Evolution: {
+        name: 'Evolution',
+        screen: props => <Evolution title='Evolução' {...props} />,
+        navigationOptions: {
+            title: 'Evolução'
         }
     },
 }
