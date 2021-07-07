@@ -72,7 +72,7 @@ export default class Evolution extends Component {
             this.setState({ loading: true })
             const res = await axios.get(`${server}/users_courses_mail`)
             const resCourses = res.data
-            const coursesList = [{}] 
+            const coursesList = [{}]
             let setCourse
             resCourses.forEach(async (c) => {
                 await this.loadActivities(c.id)
@@ -85,7 +85,7 @@ export default class Evolution extends Component {
                     activities: this.state.activities
                 }
                 coursesList.push(course)
-                                
+
             })
             this.setState({ courses: coursesList })
 
@@ -135,7 +135,13 @@ export default class Evolution extends Component {
     }
 
     sendMail = async (newSend) => {
-        
+
+        if (!this.state.user.address || !this.state.user.address.trim()) {
+            Alert.alert('Endereço não informado', 'É necessário que haja um endereço cadastrado.')
+            return
+        }
+
+
         try {
             axios.post(`${server}/sendmail`, {
                 user: {
@@ -149,12 +155,14 @@ export default class Evolution extends Component {
                 activities: newSend.activities,
                 totalWorkload: newSend.totalWorkload
             })
+
+            Alert.alert('Sucesso!', 'E-mail enviado.\nAtividades Complementares concluídas com sucesso.')
         } catch (e) {
             showError(e)
         }
 
     }
- 
+
     render() {
         return (
             <SafeAreaView style={styles.container}>

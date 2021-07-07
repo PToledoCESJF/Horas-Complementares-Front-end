@@ -10,7 +10,7 @@ import commonStyles from '../../commonStyles'
 
 export default props => {
 
-    const [workloadValidated] = useState(props.workloadValidated ? props.workloadValidated : 0)
+    const [showButtom] = useState(props.workloadValidated >= props.workload ? true : false)
 
     const send = (data) => {
         const newSend = {
@@ -34,20 +34,22 @@ export default props => {
                     <View style={styles.body}>
                         <Text style={styles.activ}><Text style={{ fontWeight: 'bold' }}>Curso: </Text>{props.name}</Text>
                         <Text style={styles.activ}><Text style={{ fontWeight: 'bold' }}>Carga horária: </Text>{props.workload} horas</Text>
-                        <Text style={styles.activ}><Text style={{ fontWeight: 'bold' }}>Horas concluídas: </Text>{workloadValidated + ""} horas</Text>
+                        <Text style={styles.activ}><Text style={{ fontWeight: 'bold' }}>Horas concluídas: </Text>{props.workloadValidated} horas</Text>
                     </View>
-                    <View>
-                        <TouchableOpacity
-                            activeOpacity={0.5}
-                            onPress={() => send(props)}
-                        >
-                            <View style={styles.buttons} >
-                                <View style={styles.button}>
-                                    <Text style={styles.buttonText}>Enviar Atividades</Text>
+                    {showButtom
+                        && <View>
+                            <TouchableOpacity
+                                activeOpacity={0.5}
+                                onPress={() => send(props)}
+                            >
+                                <View style={styles.buttons} >
+                                    <View style={styles.button}>
+                                        <Text style={styles.buttonText}>Enviar Atividades</Text>
+                                    </View>
                                 </View>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
+                            </TouchableOpacity>
+                        </View>
+                    }
                 </View>
             }
         </View>
@@ -57,8 +59,6 @@ export default props => {
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        // flexDirection: 'row',
-        // justifyContent: 'space-between',
         alignSelf: 'center',
         borderColor: '#AAA',
         borderBottomWidth: 1,
@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
         backgroundColor: commonStyles.colors.secondary
     },
     body: {
-        // width: '60%',
         alignItems: 'flex-start',
         marginHorizontal: 15,
         marginBottom: 10
@@ -76,7 +75,6 @@ const styles = StyleSheet.create({
         fontFamily: commonStyles.fontFamily,
         color: commonStyles.colors.tertiary,
         fontSize: 16,
-        // fontWeight: ''
     },
     buttons: {
         flexDirection: 'row',

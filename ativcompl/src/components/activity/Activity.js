@@ -56,12 +56,12 @@ export default props => {
                     <Text style={styles.activ}>{props.name}</Text>
                 </View>
                 <View style={styles.body}>
-                    <TouchableWithoutFeedback onPress={() => props.onToggleActivity(props.id)}>
+                    {/* <TouchableWithoutFeedback onPress={() => props.onToggleActivity(props.id)}> */}
                         <View style={styles.checkContainer}>
                             {getCheckView(props.completed)}
                             <Text style={styles.textBody}>Concluído</Text>
                         </View>
-                    </TouchableWithoutFeedback>
+                    {/* </TouchableWithoutFeedback> */}
                     <View>
                         <Text style={styles.textBody}>Carga horária: {props.workload + ""} h</Text>
                     </View>

@@ -87,13 +87,13 @@ const menuRoutes = {
             title: 'Endereço'
         }
     },
-    Certificate: {
-        name: 'Certificate',
-        screen: props => <CertificateView title='Certificado' {...props} />,
-        navigationOptions: {
-            title: 'Certificado'
-        }
-    },
+    // Certificate: {
+    //     name: 'Certificate',
+    //     screen: props => <CertificateView title='Certificado' {...props} />,
+    //     navigationOptions: {
+    //         title: 'Certificado'
+    //     }
+    // },
     Evolution: {
         name: 'Evolution',
         screen: props => <Evolution title='Evolução' {...props} />,

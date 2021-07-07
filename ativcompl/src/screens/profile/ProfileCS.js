@@ -67,7 +67,7 @@ export default class Profile extends Component {
             showError(e)
         }
     }
-    
+
     render() {
         return (
             <SafeAreaView style={styles.container}>
@@ -76,21 +76,11 @@ export default class Profile extends Component {
                     onCancel={() => this.setState({ showProfileAddCourse: false })}
                     onSave={this.addCourse}
                 />
-                <Header title='Perfil' />
-                <View style={styles.iconBar}>
-                    <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}>
-                        <Icon
-                            name={'bars'}
-                            size={20} color={commonStyles.colors.secondary}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity>
-                        <Icon
-                            name={'bell-o'}
-                            size={20} color={commonStyles.colors.secondary}
-                        />
-                    </TouchableOpacity>
-                </View>
+                <Header
+                    title='Perfil'
+                    bars={this.props.navigation.openDrawer}
+                    toggleFilter={this.toggleFilter}
+                />
                 {this.state.loading
                     && <ActivityIndicator color={commonStyles.colors.primary} size={50} style={{ marginTop: 150 }} />
                     ||
@@ -109,7 +99,7 @@ export default class Profile extends Component {
                             <View style={styles.datas}>
                                 <Text style={styles.input}>{this.state.name}</Text>
                                 <Text style={styles.input}>
-                                <Text style={styles.label}>Matrícula: </Text>
+                                    <Text style={styles.label}>Matrícula: </Text>
                                     {this.state.registration}
                                 </Text>
                                 <Text style={styles.input}>{this.state.email}</Text>

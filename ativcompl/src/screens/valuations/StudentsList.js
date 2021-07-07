@@ -78,6 +78,7 @@ export default class Valuations extends Component {
             const resActivities = []
             resActivities.push(res.data)
             this.setState({ activities: resActivities }, /* this.filterActivities */)
+            
             if (this.state.activities.length > 0) {
                 this.setState({ student: student })
                 this.setState({ showActivitiesUsers: true })
@@ -119,34 +120,34 @@ export default class Valuations extends Component {
             Alert.alert('Dados Inválidos', 'Avaliação não informada.')
             return
         }
-        
+
         // TODO >> Se workloadValidated for vazio ou atribuir o valor de workload a ele
         if (!newValuation.workloadValidated) {
             Alert.alert('Dados Inválidos', 'workloadValidated não informado.')
             return
         }
-        
+
         try {
             await axios.post(`${server}/valuations`, {
                 activityId: newValuation.activityId,
                 valuation: newValuation.valuation,
                 justification: newValuation.justification,
-                
+
             })
-            
+
             await axios.put(`${server}/activities/${newValuation.activityId}/valuations`, {
                 workloadValidated: newValuation.workloadValidated,
                 completed: true
             })
-            
+
             let msgNotification = ''
 
-            if(newValuation.valuation == 1){
-                msgNotification = 'Show de bola mano'
-            } else if(newValuation.valuation == 2){
-                msgNotification = 'Meia boca'
-            } else if(newValuation.valuation == 3){
-                msgNotification = 'Deu ruim'
+            if (newValuation.valuation == 1) {
+                msgNotification = 'aceita.'
+            } else if (newValuation.valuation == 2) {
+                msgNotification = 'parcialmente recusada.'
+            } else if (newValuation.valuation == 3) {
+                msgNotification = 'totalmente recusada.'
             }
 
             await axios.post(`${server}/notifications`, {
@@ -168,13 +169,10 @@ export default class Valuations extends Component {
 
     }
 
-
     render() {
         return (
             <SafeAreaView style={styles.container}>
-                <Header title='Avaliações' />
-
-                <ValuationsAdd 
+                <ValuationsAdd
                     activity={this.state.activity}
                     isVisible={this.state.showActivityUser}
                     onCancel={() => this.setState({
@@ -184,28 +182,18 @@ export default class Valuations extends Component {
                     onSave={this.saveValuation}
                 />
 
-                <ActivitiesUsers 
+                <ActivitiesUsers
                     activities={this.state.activities}
                     isVisible={this.state.showActivitiesUsers}
                     onCancel={() => this.setState({ showActivitiesUsers: false })}
                     student={this.state.student}
                     onActivity={this.loadingActivity}
                 />
+                <Header
+                    title='Avaliações'
+                    bars={this.props.navigation.openDrawer}
+                />
 
-                <View style={styles.iconBar}>
-                    <TouchableOpacity onPress={() => this.props.navigation.openDrawer()}>
-                        <Icon
-                            name={'bars'}
-                            size={20} color={commonStyles.colors.secondary}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity /* onPress={this.toggleFilter} */>
-                        <Icon
-                            name={'bell-o'}
-                            size={20} color={commonStyles.colors.secondary}
-                        />
-                    </TouchableOpacity>
-                </View>
                 {this.state.loading
                     && <ActivityIndicator color={commonStyles.colors.primary} size={50} style={{ marginTop: 150 }} />
                     ||

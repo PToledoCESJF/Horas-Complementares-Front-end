@@ -27,6 +27,7 @@ const initialState = {
     start: new Date(),
     end: new Date(),
     workload: '',
+    certificate: '',
     categoryId: 1,
     courseId: 1,
     categories: [],
@@ -72,9 +73,11 @@ export default class ActivityAdd extends Component {
         this.setState({
             id: '',
             name: '',
+            institution: '',
             start: new Date(),
             end: new Date(),
             workload: '',
+            certificate: '',
             categoryId: 1,
             courseId: 1,
             showDateStartPicker: false,
@@ -85,10 +88,13 @@ export default class ActivityAdd extends Component {
 
     save = () => {
         const newActivity = {
+            id: this.state.id,
             name: this.state.name,
+            institution: this.state.institution,
             start: this.state.start,
             end: this.state.end,
             workload: this.state.workload,
+            certificate: this.state.certificate,
             completed: false,
             categoryId: this.state.categoryId,
             courseId: this.state.courseId
@@ -206,6 +212,11 @@ export default class ActivityAdd extends Component {
                                     autoFocus
                                     onChangeText={name => this.setState({ name })}
                                     value={this.state.name}
+                                />
+                                <Text style={styles.label}>Instituição Promotora</Text>
+                                <TextInput style={styles.input}
+                                    onChangeText={institution => this.setState({ institution })}
+                                    value={this.state.institution}
                                 />
                                 <View style={styles.dateGroup}>
                                     <View style={styles.dateHour}>

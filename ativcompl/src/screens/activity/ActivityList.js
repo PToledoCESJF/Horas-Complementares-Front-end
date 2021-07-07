@@ -27,6 +27,8 @@ const initialState = {
     visibleActivities: [],
     activities: [],
     workloadCompleted: '',
+    supervisorId: 1002,
+    activityCreatedId: '',
 }
 export default class ActivityList extends Component {
     state = {
@@ -42,19 +44,6 @@ export default class ActivityList extends Component {
         this.getWorkloadCompleted()
         this.loadActivities()
     }
-
-// ude.my/UC-27e8929b-a26f-4464-af05-f714237d15e5
-
-    // TODO >> converter essa funcionalidade para outros fins
-    // loadActivities = async () => {
-    //     try {
-    //         const maxDate = moment().format('YYYY-MM-10 23:59:59')
-    //         const res = await axios.get(`${server}/activities?start=${maxDate}`)
-    //         this.setState({ activities: res.data }, this.filterActivities)
-    //     } catch (e) {
-    //         showError(e)
-    //     }
-    // }
 
     loadActivities = async () => {
         try {
@@ -158,16 +147,23 @@ export default class ActivityList extends Component {
     }
 
     addActivity = async (newActivity) => {
-
+        
+        const msgNotification = "para ser avaliada."
+        
         try {
             await axios.post(`${server}/activities`, {
                 name: newActivity.name,
+                institution: newActivity.institution,
                 start: newActivity.start,
                 end: newActivity.end,
                 workload: newActivity.workload,
                 completed: newActivity.completed,
+                certificate: newActivity.certificate,
                 categoryId: newActivity.categoryId,
-                courseId: newActivity.courseId
+                courseId: newActivity.courseId,
+                userRecipientId: this.state.supervisorId,
+                message: msgNotification,
+                read: false
             })
 
             this.setState({ showActivityAdd: false })
@@ -191,11 +187,11 @@ export default class ActivityList extends Component {
     }
 
     certificateActivity = async (activity) => {
-        if(!activity.id){
+        if (!activity.id) {
             Alert.alert('Dados Inválidos', 'Id da Atividade.')
             return
         }
-        if(!activity.certificate || !activity.certificate.trim()){
+        if (!activity.certificate || !activity.certificate.trim()) {
             Alert.alert('Dados Inválidos', 'Certificado é um campo obrigatório.')
             return
         }
@@ -207,8 +203,8 @@ export default class ActivityList extends Component {
             this.setState({ showCertificateAdd: false })
             this.loadActivities()
             Alert.alert('Sucesso!', 'Certificado registrado com sucesso.')
-            
-            
+
+
         } catch (e) {
             showError(e)
         }
@@ -227,7 +223,7 @@ export default class ActivityList extends Component {
                     onCancel={() => this.setState({ showCertificateAdd: false })}
                     onSave={this.certificateActivity}
                 />
-                <Header 
+                <Header
                     title='Atividades'
                     bars={this.props.navigation.openDrawer}
                     toggleFilter={this.toggleFilter}
@@ -237,12 +233,12 @@ export default class ActivityList extends Component {
                         data={this.state.visibleActivities}
                         keyExtractor={item => `${item.id}`}
                         renderItem={({ item }) =>
-                                <TouchableOpacity
-                                    activeOpacity={0.5}
-                                    onPress={() => this.setState({ item: item, showCertificateAdd: true})}
-                                >
-                                    <Activity {...item} onToggleActivity={this.toggleActivity} onDelete={this.deleteActivity} />
-                                </TouchableOpacity>
+                            <TouchableOpacity
+                                activeOpacity={0.5}
+                                onPress={() => this.setState({ item: item, showCertificateAdd: true })}
+                            >
+                                <Activity {...item} onToggleActivity={this.toggleActivity} onDelete={this.deleteActivity} />
+                            </TouchableOpacity>
                         } />
                 </View>
                 <TouchableOpacity style={styles.addButton}

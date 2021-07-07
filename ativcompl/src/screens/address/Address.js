@@ -1,14 +1,14 @@
 import React, { Component } from 'react'
 import {
     View,
-    ImageBackground,
     StyleSheet,
     SafeAreaView,
     TouchableOpacity,
     Platform,
     Alert,
     Text,
-    TextInput
+    TextInput,
+    ScrollView
 } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import axios from 'axios'
@@ -19,6 +19,7 @@ import commonStyles from '../../commonStyles'
 
 const initialState = {
     id: 0,
+    fone: '',
     street: '',
     number: '',
     district: '',
@@ -62,6 +63,7 @@ export default class Address extends Component {
         if (this.state.newAddress && this.state.id === 0) {
             try {
                 await axios.post(`${server}/addresses`, {
+                    fone: this.state.fone,
                     street: this.state.street,
                     number: this.state.number,
                     district: this.state.district,
@@ -75,6 +77,7 @@ export default class Address extends Component {
         } else {
             try {
                 await axios.put(`${server}/addresses/${this.state.id}`, {
+                    fone: this.state.fone,
                     street: this.state.street,
                     number: this.state.number,
                     district: this.state.district,
@@ -93,58 +96,73 @@ export default class Address extends Component {
     render() {
         return (
             <SafeAreaView style={styles.container}>
-                <Header
-                    title={this.props.title}
-                    bars={this.props.navigation.openDrawer}
-                    toggleFilter={this.toggleFilter}
-                />
-                <View style={styles.app}>
-                    {this.state.newAddress &&
-                        <TextInput style={styles.input}
-                            placeholder="Logradouro..."
-                            onChangeText={street => this.setState({ street })}
-                            value={this.state.street} />
-                        ||
-                        <Text style={styles.nEdit}>{this.state.street}</Text>
-                    }{this.state.newAddress &&
-                        <TextInput style={styles.input}
-                            placeholder="Número..."
-                            onChangeText={number => this.setState({ number })}
-                            value={this.state.number} />
-                        ||
-                        <Text style={styles.nEdit}>{this.state.number}</Text>
-                    }{this.state.newAddress &&
-                        <TextInput style={styles.input}
-                            placeholder="Bairro..."
-                            onChangeText={district => this.setState({ district })}
-                            value={this.state.district} />
-                        ||
-                        <Text style={styles.nEdit}>{this.state.district}</Text>
-                    }{this.state.newAddress &&
-                        <TextInput style={styles.input}
-                            placeholder="Cidade..."
-                            onChangeText={city => this.setState({ city })}
-                            value={this.state.city} />
-                        ||
-                        <Text style={styles.nEdit}>{this.state.city}</Text>
-                    }{this.state.newAddress &&
-                        <TouchableOpacity onPress={this.save}>
-                            <View style={styles.buttons} >
-                                <View style={styles.button}>
-                                    <Text style={styles.buttonText}>Salvar</Text>
+                <ScrollView>
+                    <Header
+                        title={this.props.title}
+                        bars={this.props.navigation.openDrawer}
+                        toggleFilter={this.toggleFilter}
+                    />
+                    <View style={styles.app}>
+                        <Text style={styles.label}>Telefone</Text>
+                        {this.state.newAddress &&
+                            <TextInput style={styles.input}
+                                autoFocus
+                                keyboardType='phone-pad'
+                                onChangeText={fone => this.setState({ fone })}
+                                value={this.state.fone} />
+                            ||
+                            <Text style={styles.nEdit}>{this.state.fone}</Text>
+                        }
+                        <Text style={styles.label}>Logradouro</Text>
+                        {this.state.newAddress &&
+                            <TextInput style={styles.input}
+                                onChangeText={street => this.setState({ street })}
+                                value={this.state.street} />
+                            ||
+                            <Text style={styles.nEdit}>{this.state.street}</Text>
+                        }
+                        <Text style={styles.label}>Número</Text>
+                        {this.state.newAddress &&
+                            <TextInput style={styles.input}
+                                onChangeText={number => this.setState({ number })}
+                                value={this.state.number} />
+                            ||
+                            <Text style={styles.nEdit}>{this.state.number}</Text>
+                        }
+                        <Text style={styles.label}>Bairro</Text>
+                        {this.state.newAddress &&
+                            <TextInput style={styles.input}
+                                onChangeText={district => this.setState({ district })}
+                                value={this.state.district} />
+                            ||
+                            <Text style={styles.nEdit}>{this.state.district}</Text>
+                        }
+                        <Text style={styles.label}>Cidade</Text>
+                        {this.state.newAddress &&
+                            <TextInput style={styles.input}
+                                onChangeText={city => this.setState({ city })}
+                                value={this.state.city} />
+                            ||
+                            <Text style={styles.nEdit}>{this.state.city}</Text>
+                        }{this.state.newAddress &&
+                            <TouchableOpacity onPress={this.save}>
+                                <View style={styles.buttons} >
+                                    <View style={styles.button}>
+                                        <Text style={styles.buttonText}>Salvar</Text>
+                                    </View>
                                 </View>
-                            </View>
-                        </TouchableOpacity>
-                        ||
-                        <TouchableOpacity onPress={() => this.setState({ newAddress: true })}>
-                            <View style={styles.buttons} >
-                                <View style={styles.button}>
-                                    <Text style={styles.buttonText}>Editar</Text>
+                            </TouchableOpacity>
+                            ||
+                            <TouchableOpacity onPress={() => this.setState({ newAddress: true })}>
+                                <View style={styles.buttons} >
+                                    <View style={styles.button}>
+                                        <Text style={styles.buttonText}>Editar</Text>
+                                    </View>
                                 </View>
-                            </View>
-                        </TouchableOpacity>
-                    }
-                </View>
+                            </TouchableOpacity>
+                        }
+                    </View>
+                </ScrollView>
             </SafeAreaView>
         )
     }
@@ -152,7 +170,8 @@ export default class Address extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: commonStyles.colors.secondary
     },
     background: {
         flex: 2
@@ -162,7 +181,7 @@ const styles = StyleSheet.create({
         fontFamily: commonStyles.fontFamily,
         color: commonStyles.colors.secondary,
         fontSize: 50,
-        marginBottom: 20
+        marginVertical: 20
     },
     iconBar: {
         backgroundColor: commonStyles.colors.primary,
@@ -186,7 +205,7 @@ const styles = StyleSheet.create({
     input: {
         fontFamily: commonStyles.fontFamily,
         height: 40,
-        margin: 15,
+        marginHorizontal: 15,
         color: '#000',
         backgroundColor: '#FFF',
         borderBottomWidth: 1,
@@ -196,7 +215,7 @@ const styles = StyleSheet.create({
     nEdit: {
         fontFamily: commonStyles.fontFamily,
         height: 40,
-        margin: 15,
+        marginHorizontal: 15,
         color: '#708090',
         borderColor: '#A9A9A9',
         borderBottomWidth: 1,
@@ -222,5 +241,15 @@ const styles = StyleSheet.create({
         fontFamily: commonStyles.fontFamily,
         color: '#FFF',
         fontSize: 18
+    },
+    label: {
+        fontFamily: commonStyles.fontFamily,
+        height: 15,
+        marginHorizontal: 18,
+        color: commonStyles.colors.primary,
+        borderColor: '#A9A9A9',
+        backgroundColor: '#FFF',
+        fontSize: 12,
+        fontWeight: 'bold',
     },
 });
